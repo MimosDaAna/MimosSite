@@ -1,4 +1,3 @@
-# Publica a calculadora no GitHub Pages a cada envio para a branch main.
 name: Publicar no GitHub Pages
 
 on:
@@ -15,35 +14,33 @@ concurrency:
   group: pages
   cancel-in-progress: true
 
+defaults:
+  run:
+    working-directory: calculadora-next/calculadora-next
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        # Pasta do repositório onde está o projeto Next.js
-        working-directory: Mimos Public Page
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: npm
-          cache-dependency-path: Mimos Public Page/package-lock.json
 
-      - run: npm ci
+      - name: Instalar dependências
+        run: npm install
 
-      # Repositório "usuario.github.io" fica na raiz; os demais ficam em /nome-do-repositorio.
-      - name: Definir caminho do site
+      - name: Gerar o site
         run: |
-          REPO="${{ github.event.repository.name }}"
-          if [[ "$REPO" == *.github.io ]]; then echo "BASE_PATH=" >> "$GITHUB_ENV"; else echo "BASE_PATH=/$REPO" >> "$GITHUB_ENV"; fi
-
-      - run: npm run build
+          REPO="${GITHUB_REPOSITORY#*/}"
+          if [[ "$REPO" == *.github.io ]]; then BASE=""; else BASE="/$REPO"; fi
+          BASE_PATH="$BASE" npm run build
+          touch out/.nojekyll
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: Mimos Public Page/out
+          path: calculadora-next/calculadora-next/out
 
   deploy:
     needs: build
