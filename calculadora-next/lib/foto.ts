@@ -17,9 +17,11 @@ export function fontesFoto(url: string): string[] {
   if (!url) return [];
   const id = idDrive(url);
   if (!id) return [url];
+  // O "thumbnail" do Drive é o mais estável; o lh3 fica de reserva
+  // (às vezes ele fica carregando sem dar erro, então não pode ser o primeiro).
   return [
-    `https://lh3.googleusercontent.com/d/${id}=w1200`,
-    `https://drive.google.com/thumbnail?id=${id}&sz=w1200`
+    `https://drive.google.com/thumbnail?id=${id}&sz=w1200`,
+    `https://lh3.googleusercontent.com/d/${id}=w1200`
   ];
 }
 

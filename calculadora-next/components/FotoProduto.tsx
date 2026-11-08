@@ -1,7 +1,10 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { fontesFoto } from '@/lib/foto';
+
+/** Se um endereço não carregar nesse tempo, tenta o próximo. */
+const ESPERA_MS = 8000;
 
 interface Props {
   url: string;
@@ -10,24 +13,34 @@ interface Props {
   vazio?: ReactNode;
 }
 
-/** Mostra a foto tentando cada endereço até um carregar. */
+/** Mostra a foto tentando cada endereço até um carregar (por erro ou por demora). */
 export function FotoProduto({ url, alt = '', vazio = null }: Props) {
   const fontes = fontesFoto(url);
   const [tentativa, setTentativa] = useState(0);
   const [chave, setChave] = useState(url);
+  const carregou = useRef(false);
 
   if (chave !== url) { setChave(url); setTentativa(0); }
-  if (tentativa >= fontes.length) return <>{vazio}</>;
+
+  const atual = fontes[tentativa];
+  useEffect(() => {
+    if (!atual) return;
+    carregou.current = false;
+    const t = setTimeout(() => { if (!carregou.current) setTentativa(n => n + 1); }, ESPERA_MS);
+    return () => clearTimeout(t);
+  }, [atual]);
+
+  if (!atual) return <>{vazio}</>;
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      key={fontes[tentativa]}
-      src={fontes[tentativa]}
+      key={atual}
+      src={atual}
       alt={alt}
-      loading="lazy"
       referrerPolicy="no-referrer"
-      onError={() => setTentativa(t => t + 1)}
+      onLoad={() => { carregou.current = true; }}
+      onError={() => setTentativa(n => n + 1)}
     />
   );
 }

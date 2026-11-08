@@ -68,7 +68,9 @@ export function Calculadora() {
   useEffect(() => {
     const c = { ...PADRAO, ...ler<Partial<Config>>('mda.config', {}) };
     const salva = ler<Conexao>('mda.conexao', { url: '', key: '' });
-    const cx = { url: salva.url || PLANILHA_URL, key: salva.key || PLANILHA_SENHA };
+    // O link do código sempre vence: assim um link antigo salvo neste navegador
+    // não "prende" a calculadora numa versão velha do script.
+    const cx = { url: PLANILHA_URL || salva.url, key: salva.key || PLANILHA_SENHA };
     setConfig(c);
     setEntrada(entradaVazia(c));
     setConexao(cx);
