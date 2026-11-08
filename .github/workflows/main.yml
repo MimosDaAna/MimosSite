@@ -16,7 +16,7 @@ concurrency:
 
 defaults:
   run:
-    working-directory: calculadora-next/calculadora-next
+    working-directory: calculadora-next
 
 jobs:
   build:
@@ -40,7 +40,7 @@ jobs:
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: calculadora-next/calculadora-next/out
+          path: calculadora-next/out
 
   deploy:
     needs: build
