@@ -5,7 +5,7 @@ import { useState } from 'react';
 const LADO_MAX = 1200;
 
 /** Reduz a foto para no máximo 1200 px e converte em JPEG, para o envio à planilha ficar leve. */
-async function reduzirImagem(arquivo: File): Promise<string> {
+export async function reduzirImagem(arquivo: File): Promise<string> {
   const url = URL.createObjectURL(arquivo);
   try {
     const img = new Image();

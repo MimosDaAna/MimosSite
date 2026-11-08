@@ -1,34 +1,40 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { carregarCatalogo, linkWhatsapp } from '@/lib/catalogo';
 import { brl } from '@/lib/formato';
-import { linkWhatsapp, precoProduto, PRODUTOS, type Produto } from '@/lib/catalogo';
+import type { ItemCatalogo } from '@/lib/tipos';
+import { FotoProduto } from './FotoProduto';
+import { IconeWhatsapp } from './IconeWhatsapp';
+import { TopoLoja } from './TopoLoja';
 
-const BASE = process.env.NEXT_PUBLIC_BASE_PATH;
+const SEM_FOTO = <span className="sem-foto-grande" aria-hidden="true">✿</span>;
+/** Sem nenhum produto marcado como destaque, mostra os mais novos. */
+const DESTAQUES_PADRAO = 3;
 
-function IconeWhatsapp() {
-  return (
-    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="currentColor">
-      <path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.21 3.07.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.7.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35zM12.05 21.5h-.01a9.4 9.4 0 0 1-4.79-1.31l-.34-.2-3.56.93.95-3.47-.22-.36a9.38 9.38 0 0 1-1.44-5.01c0-5.19 4.23-9.42 9.42-9.42 2.52 0 4.88.98 6.66 2.76a9.36 9.36 0 0 1 2.76 6.67c0 5.19-4.23 9.41-9.43 9.41zm8.02-17.44A11.27 11.27 0 0 0 12.05.75C5.8.75.72 5.83.72 12.08c0 2 .52 3.95 1.52 5.66L.62 23.25l5.65-1.48a11.3 11.3 0 0 0 5.78 1.47h.01c6.25 0 11.33-5.08 11.33-11.33 0-3.03-1.18-5.87-3.32-8.01z"/>
-    </svg>
-  );
-}
-
-function BotaoWhatsapp({ p, texto }: { p: Produto; texto?: string }) {
+function BotaoWhatsapp({ p, texto }: { p: ItemCatalogo; texto?: string }) {
   const [pagina, setPagina] = useState('');
   useEffect(() => { setPagina(`${location.origin}${location.pathname}#produto-${p.id}`); }, [p.id]);
   return (
-    <a className="btn whatsapp" href={linkWhatsapp(p, precoProduto(p), pagina)} target="_blank" rel="noopener noreferrer"
+    <a className="btn whatsapp" href={linkWhatsapp(p, pagina)} target="_blank" rel="noopener noreferrer"
       aria-label={`Pedir ${p.nome} pelo WhatsApp`}>
       <IconeWhatsapp />{texto}
     </a>
   );
 }
 
+/** Tags do produto: "★ Destaque" (se marcado) e a categoria. */
+function Tags({ p }: { p: ItemCatalogo }) {
+  if (!p.destaque && !p.categoria) return null;
+  return (
+    <div className="tags">
+      {p.destaque && <span className="tag destaque">★ Destaque</span>}
+      {p.categoria && <span className="tag">{p.categoria}</span>}
+    </div>
+  );
+}
 
-function Detalhes({ p, fechar }: { p: Produto; fechar: () => void }) {
-  const [foto, setFoto] = useState(0);
-
+function Detalhes({ p, fechar }: { p: ItemCatalogo; fechar: () => void }) {
   useEffect(() => {
     const tecla = (e: KeyboardEvent) => { if (e.key === 'Escape') fechar(); };
     document.addEventListener('keydown', tecla);
@@ -41,34 +47,13 @@ function Detalhes({ p, fechar }: { p: Produto; fechar: () => void }) {
       <div className="modal card" role="dialog" aria-modal="true" aria-label={p.nome} onClick={e => e.stopPropagation()}>
         <button className="icon-btn fechar" type="button" aria-label="Fechar" onClick={fechar}>×</button>
         <div className="modal-grid">
-          <div>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="foto-grande" src={p.imagens[foto]} alt={p.nome} />
-            {p.imagens.length > 1 && (
-              <div className="miniaturas">
-                {p.imagens.map((src, i) => (
-                  <button key={src} type="button" className={i === foto ? 'ativa' : ''} onClick={() => setFoto(i)}
-                    aria-label={`Foto ${i + 1}`}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={src} alt="" loading="lazy" />
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <div className="foto-grande"><FotoProduto url={p.foto} alt={p.nome} vazio={SEM_FOTO} /></div>
           <div className="modal-info">
-            <div className="tags">{p.tags.map(t => <span key={t} className="tag">{t}</span>)}</div>
+            <Tags p={p} />
             <h2 className="produto-nome">{p.nome}</h2>
-            <div className="preco-produto">{brl(precoProduto(p))}</div>
+            <div className="preco-produto">{brl(p.preco)}</div>
             <BotaoWhatsapp p={p} texto="Pedir pelo WhatsApp" />
-            <p>{p.descricao}</p>
-            <ul className="destaques">{p.destaques.map(d => <li key={d}>{d}</li>)}</ul>
-            <ul className="lines">
-              <li><span>Material</span><span>{[...new Set(p.perfil.filamentos.map(f => f.tipo))].join(', ')}</span></li>
-            </ul>
-            <p className="credito">
-              Modelo de <a href={p.link} target="_blank" rel="noopener noreferrer">{p.designer}</a> no MakerWorld · {p.licenca}
-            </p>
+            {p.descricao && <p className="descricao">{p.descricao}</p>}
           </div>
         </div>
       </div>
@@ -76,64 +61,126 @@ function Detalhes({ p, fechar }: { p: Produto; fechar: () => void }) {
   );
 }
 
-export function Catalogo() {
-  const [busca, setBusca] = useState('');
-  const [tag, setTag] = useState('');
-  const [aberto, setAberto] = useState<Produto | null>(null);
+/** Card do produto. `grande` = versão da faixa de destaques. */
+function CardProduto({ p, abrir, grande = false }: { p: ItemCatalogo; abrir: () => void; grande?: boolean }) {
+  return (
+    <article className={`produto card ${grande ? 'grande' : ''}`} id={grande ? undefined : `produto-${p.id}`}>
+        <button type="button" className="produto-foto" onClick={abrir} aria-label={`Ver ${p.nome}`}>
+          <FotoProduto url={p.foto} alt={p.nome} vazio={SEM_FOTO} />
+        </button>
+        <Tags p={p} />
+        <h3 className="produto-nome">{p.nome}</h3>
+        {grande && p.descricao && <p className="produto-resumo">{p.descricao}</p>}
+        <div className="produto-rodape">
+          <div className="preco-produto">{brl(p.preco)}</div>
+          <BotaoWhatsapp p={p} texto={grande ? 'Pedir' : undefined} />
+        </div>
+    </article>
+  );
+}
 
-  const tags = useMemo(() => [...new Set(PRODUTOS.flatMap(p => p.tags))].sort(), []);
+function Carregando({ n }: { n: number }) {
+  return (
+    <div className="vitrine" aria-busy="true" aria-label="Carregando produtos">
+      {Array.from({ length: n }, (_, i) => (
+        <div key={i} className="produto card carregando"><div className="produto-foto" /></div>
+      ))}
+    </div>
+  );
+}
+
+export function Catalogo() {
+  const [produtos, setProdutos] = useState<ItemCatalogo[] | null>(null);
+  const [erro, setErro] = useState('');
+  const [busca, setBusca] = useState('');
+  const [categoria, setCategoria] = useState('');
+  const [aberto, setAberto] = useState<ItemCatalogo | null>(null);
+
+  useEffect(() => {
+    carregarCatalogo()
+      .then(itens => {
+        setProdutos(itens);
+        // O link do WhatsApp aponta para #produto-ID: já abre o produto.
+        const id = decodeURIComponent(location.hash.replace(/^#produto-/, ''));
+        const alvo = id && itens.find(i => i.id === id);
+        if (alvo) setAberto(alvo);
+      })
+      .catch(e => setErro((e as Error).message));
+  }, []);
+
+  const fechar = useCallback(() => setAberto(null), []);
+  const lista = useMemo(() => produtos ?? [], [produtos]);
+  const categorias = useMemo(() => [...new Set(lista.map(p => p.categoria).filter(Boolean))].sort(), [lista]);
+  const destaques = useMemo(() => {
+    const marcados = lista.filter(p => p.destaque);
+    return marcados.length ? marcados : lista.slice(0, DESTAQUES_PADRAO);
+  }, [lista]);
+
   const termo = busca.trim().toLowerCase();
-  const itens = PRODUTOS.filter(p =>
-    (!tag || p.tags.includes(tag)) &&
-    (!termo || `${p.nome} ${p.descricao} ${p.tags.join(' ')}`.toLowerCase().includes(termo))
+  const itens = lista.filter(p =>
+    (!categoria || p.categoria === categoria) &&
+    (!termo || `${p.nome} ${p.descricao} ${p.categoria}`.toLowerCase().includes(termo))
   );
 
-  return (
-    <div className="wrap">
-      <header>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="logo" src={`${BASE}/logo.jpg`} alt="Logo Mimos da Ana" />
-        <div className="brand">
-          <h1>Mimos da Ana</h1>
-          <p>Catálogo · peças impressas em 3D</p>
-        </div>
-        <span className="status ok">{PRODUTOS.length} {PRODUTOS.length === 1 ? 'produto' : 'produtos'}</span>
-      </header>
+  let catalogo;
+  if (erro) {
+    catalogo = <div className="card empty"><b>Não foi possível carregar o catálogo</b>Tente de novo em instantes.</div>;
+  } else if (!produtos) {
+    catalogo = <Carregando n={3} />;
+  } else if (!itens.length) {
+    catalogo = (
+      <div className="card empty">
+        <b>{lista.length ? 'Nada encontrado' : 'Em breve, novidades por aqui ✿'}</b>
+        {lista.length ? 'Tente outra palavra ou categoria.' : 'Ainda não há produtos no catálogo.'}
+      </div>
+    );
+  } else {
+    catalogo = (
+      <div className="vitrine">
+        {itens.map(p => <CardProduto key={p.id} p={p} abrir={() => setAberto(p)} />)}
+      </div>
+    );
+  }
 
-      <div className="filtros">
-        <input type="search" placeholder="Buscar no catálogo..." value={busca} onChange={e => setBusca(e.target.value)} />
-        {tags.length > 1 && (
-          <nav aria-label="Categorias">
-            <button type="button" aria-pressed={!tag} onClick={() => setTag('')}>Todos</button>
-            {tags.map(t => (
-              <button key={t} type="button" aria-pressed={tag === t} onClick={() => setTag(tag === t ? '' : t)}>{t}</button>
+  // Durante a busca, os destaques saem da frente para os resultados aparecerem logo.
+  const mostrarDestaques = !termo && !erro && (!produtos || destaques.length > 0);
+
+  return (
+    <div className="wrap loja">
+      <TopoLoja
+        pagina="catalogo"
+        subtitulo="Catálogo · peças impressas em 3D"
+        busca={{ valor: busca, mudar: setBusca }}
+      />
+
+      {mostrarDestaques && (
+        <section className="secao" aria-labelledby="titulo-destaques">
+          <h2 className="titulo-secao" id="titulo-destaques"><span aria-hidden="true">★</span> Produtos em destaque</h2>
+          {produtos ? (
+            <div className="vitrine destaques">
+              {destaques.map(p => <CardProduto key={p.id} p={p} grande abrir={() => setAberto(p)} />)}
+            </div>
+          ) : <Carregando n={2} />}
+        </section>
+      )}
+
+      <section className="secao" aria-labelledby="titulo-catalogo">
+        <h2 className="titulo-secao" id="titulo-catalogo">
+          <span aria-hidden="true">✿</span> {termo ? `Resultados para “${busca.trim()}”` : 'Catálogo'}
+        </h2>
+        {categorias.length > 1 && (
+          <nav className="categorias" aria-label="Categorias">
+            <button type="button" aria-pressed={!categoria} onClick={() => setCategoria('')}>Todos</button>
+            {categorias.map(c => (
+              <button key={c} type="button" aria-pressed={categoria === c}
+                onClick={() => setCategoria(categoria === c ? '' : c)}>{c}</button>
             ))}
           </nav>
         )}
-      </div>
+        {catalogo}
+      </section>
 
-      {itens.length ? (
-        <div className="vitrine">
-          {itens.map(p => (
-            <article className="produto card" key={p.id} id={`produto-${p.id}`}>
-              <button type="button" className="produto-foto" onClick={() => setAberto(p)} aria-label={`Ver ${p.nome}`}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={p.imagens[0]} alt={p.nome} loading="lazy" />
-              </button>
-              <div className="tags">{p.tags.slice(0, 2).map(t => <span key={t} className="tag">{t}</span>)}</div>
-              <h2 className="produto-nome">{p.nome}</h2>
-              <div className="produto-rodape">
-                <div className="preco-produto">{brl(precoProduto(p))}</div>
-                <BotaoWhatsapp p={p} />
-              </div>
-            </article>
-          ))}
-        </div>
-      ) : (
-        <div className="card empty"><b>Nada encontrado</b>Tente outra palavra ou categoria.</div>
-      )}
-
-      {aberto && <Detalhes p={aberto} fechar={() => setAberto(null)} />}
+      {aberto && <Detalhes p={aberto} fechar={fechar} />}
     </div>
   );
 }

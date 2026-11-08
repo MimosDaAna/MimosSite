@@ -40,7 +40,10 @@ O caminho do site (`/calculadora`) é ajustado automaticamente pelo nome do repo
 |---|---|
 | `app/layout.tsx` | Fontes (Nunito e Dancing Script), título da aba e ícone. |
 | `app/globals.css` | Todo o visual (cores da marca no topo, em `:root`). |
-| `app/page.tsx` | Página inicial; só renderiza a calculadora. |
+| `app/page.tsx` | Página inicial: o **catálogo**. |
+| `app/calculadora/page.tsx` | A **calculadora** (endereço `/calculadora/`, fora dos buscadores). |
+| `app/orcamento/page.tsx` | Pedido de orçamento. |
+| `app/catalogo/page.tsx` | Endereço antigo do catálogo, mantido para links já enviados. |
 | `components/Calculadora.tsx` | Cabeçalho, abas, conexão com a planilha e avisos. |
 | `components/AbaCalcular.tsx` | Formulário do produto, filamentos, tempo e o resumo do preço. |
 | `components/AbaHistorico.tsx` | Lista dos cálculos salvos na planilha. |
@@ -51,18 +54,27 @@ O caminho do site (`/calculadora`) é ajustado automaticamente pelo nome do repo
 | `apps-script/Codigo.gs` | Código para colar no Apps Script da planilha (grava as fotos no Drive). |
 | `app/catalogo/page.tsx` | Página do catálogo. |
 | `components/Catalogo.tsx` | Vitrine, busca, detalhes do produto e botão de WhatsApp. |
-| `lib/catalogo.ts` | **Produtos do catálogo e número do WhatsApp.** |
+| `lib/catalogo.ts` | Busca os produtos do catálogo na planilha e **número do WhatsApp**. |
+| `components/CamposCatalogo.tsx` | "Mostrar no catálogo", categoria e descrição. |
+| `components/EditorCatalogo.tsx` | Edição de foto e catálogo de um cálculo já salvo (Histórico). |
+| `components/FotoProduto.tsx` / `lib/foto.ts` | Mostra fotos do Drive com plano B. |
 | `public/logo.jpg` | Logo da marca. |
 | `.github/workflows/deploy.yml` | Publicação automática no GitHub Pages. |
 
 ## Catálogo
 
-Fica em `/catalogo/` (no GitHub Pages: `https://SEU-USUARIO.github.io/NOME-DO-REPO/catalogo/`). Mostra foto, preço e um botão de WhatsApp que abre a conversa com o nome, o preço e o link do produto já escritos.
+Fica na **página inicial** do site (o endereço antigo `/catalogo/` continua funcionando). A calculadora fica em `/calculadora/`. No topo: pesquisa, **Fale conosco** (WhatsApp) e **Orçamento**. Depois vem **Produtos em destaque** e o catálogo completo, com categorias, foto, preço e botão de WhatsApp.
 
-- **Número do WhatsApp:** em `lib/catalogo.ts`, preencha `WHATSAPP` só com dígitos, com 55 e DDD (ex.: `'5511912345678'`).
-- **Produtos:** ficam na lista `PRODUTOS`, no mesmo arquivo. O site não consegue ler o MakerWorld sozinho, então, ao adicionar um modelo na coleção, inclua um item novo na lista (ou peça ao Claude para ler a coleção e atualizar).
-- **Preço:** calculado com a mesma fórmula e os valores padrão da calculadora (`PADRAO` em `lib/calculo.ts`). Para fixar outro valor num produto, use `precoManual`.
-- **Fotos:** vêm direto do MakerWorld.
+- **Os produtos vêm da planilha.** Na calculadora, marque **Mostrar no catálogo** ao salvar um cálculo (com categoria e descrição opcionais). Para um cálculo já salvo, vá em **Histórico** e clique em **+ Catálogo · ✎ editar**: dá para ligar/desligar, trocar a foto, a categoria e a descrição.
+- **Destaque:** marque **★ Destacar no topo** para o produto aparecer em "Produtos em destaque". Sem nenhum marcado, aparecem os 3 mais novos.
+- **Preço:** o preço final do cálculo salvo.
+- **Direto na planilha:** as colunas **No catálogo** (`Sim` ou vazio), **Descrição (catálogo)** e **Categoria** também podem ser editadas à mão.
+- **Número do WhatsApp:** em `lib/catalogo.ts`, `WHATSAPP` (só dígitos, com 55 e DDD).
+- A ação `catalogo` do Apps Script é pública e só devolve os produtos marcados, sem custos.
+
+## Orçamento
+
+Fica em `/orcamento/`. O cliente informa nome, quantidade, descrição com medidas e, se quiser, uma foto. O pedido vai para a aba **Orçamentos** da planilha (foto no Drive) e o WhatsApp abre com tudo preenchido. A coluna **Situação** começa como "Novo" para você acompanhar.
 
 ## Mudar os valores padrão
 

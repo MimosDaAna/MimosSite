@@ -6,6 +6,7 @@ import { brl, num } from '@/lib/formato';
 import { api } from '@/lib/planilha';
 import type { Conexao, Config, EntradaCalculo, LinhaFilamento, TipoAviso } from '@/lib/tipos';
 import { CampoFoto } from './CampoFoto';
+import { CamposCatalogo } from './CamposCatalogo';
 import { CampoUnidade } from './CampoUnidade';
 
 let proximoId = 1;
@@ -22,7 +23,7 @@ export function entradaVazia(config: Config): EntradaCalculo {
     horas: '0', minutos: '0',
     mult: String(config.mult), taxa: String(config.taxa),
     filamentos: [novaLinha(config)],
-    foto: ''
+    foto: '', catalogo: false, descricao: '', categoria: '', destaque: false
   };
 }
 
@@ -33,14 +34,16 @@ interface Props {
   setEntrada: (fn: (e: EntradaCalculo) => EntradaCalculo) => void;
   aviso: (msg: string, tipo?: TipoAviso) => void;
   aoSalvar: () => void;
+  /** Categorias já usadas no catálogo (sugestões). */
+  categorias: string[];
 }
 
-export function AbaCalcular({ config, conexao, entrada, setEntrada, aviso, aoSalvar }: Props) {
+export function AbaCalcular({ config, conexao, entrada, setEntrada, aviso, aoSalvar, categorias }: Props) {
   const [salvando, setSalvando] = useState(false);
   const r = useMemo(() => calcular(entrada, config), [entrada, config]);
   const conectado = !!conexao.url;
 
-  const campo = (k: keyof Omit<EntradaCalculo, 'filamentos' | 'foto'>) => ({
+  const campo = (k: keyof Omit<EntradaCalculo, 'filamentos' | 'foto' | 'catalogo' | 'destaque'>) => ({
     value: entrada[k],
     onChange: (ev: { target: { value: string } }) => setEntrada(e => ({ ...e, [k]: ev.target.value }))
   });
@@ -64,15 +67,26 @@ export function AbaCalcular({ config, conexao, entrada, setEntrada, aviso, aoSal
     if (r.dados.custoBase <= 0) { aviso('Preencha os gramas ou o tempo de impressão.', 'err'); return; }
     setSalvando(true);
     try {
-      const dados = { ...r.dados };
+      const dados = {
+        ...r.dados,
+        catalogo: entrada.catalogo,
+        descricao: entrada.catalogo ? entrada.descricao.trim() : '',
+        categoria: entrada.catalogo ? entrada.categoria.trim() : '',
+        destaque: entrada.catalogo && entrada.destaque
+      };
       if (entrada.foto.startsWith('data:')) {
         dados.fotoBase64 = entrada.foto.split(',')[1];
         dados.fotoTipo = 'image/jpeg';
       } else if (entrada.foto) {
         dados.fotoUrl = entrada.foto;
       }
-      await api(conexao, 'save', { data: dados });
-      aviso('Cálculo salvo na planilha ♥', 'ok');
+      const resp = await api<{ foto?: string }>(conexao, 'save', { data: dados });
+      // O script antigo (sem fotos) não devolve "foto": o cálculo grava, mas a foto se perde.
+      if (entrada.foto && !resp.foto) {
+        aviso('Cálculo salvo, mas a foto não: atualize o Apps Script e publique uma Nova versão.', 'err');
+      } else {
+        aviso('Cálculo salvo na planilha ♥', 'ok');
+      }
       aoSalvar();
     } catch (e) {
       aviso((e as Error).message, 'err');
@@ -98,9 +112,12 @@ export function AbaCalcular({ config, conexao, entrada, setEntrada, aviso, aoSal
             <label>Quantidade
               <input type="number" min={1} step={1} {...campo('quantidade')} />
             </label>
-            <label className="full">Observações
+            <label className="full">Observações (só para você)
               <textarea placeholder="Cliente, cor pedida, prazo..." {...campo('obs')} />
             </label>
+            <CamposCatalogo catalogo={entrada.catalogo} descricao={entrada.descricao} categoria={entrada.categoria}
+              destaque={entrada.destaque}
+              categorias={categorias} mudar={m => setEntrada(e => ({ ...e, ...m }))} />
           </div>
         </div>
 

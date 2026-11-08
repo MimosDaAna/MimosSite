@@ -93,6 +93,8 @@ export function Calculadora() {
     if (await conectar(cx, false)) aviso('Planilha conectada ♥', 'ok');
   }
 
+  const categorias = [...new Set((historico ?? []).map(i => String(i.categoria || '').trim()).filter(Boolean))].sort();
+
   const classeStatus = status === 'ok' ? 'ok' : status === 'err' ? 'err' : '';
 
   return (
@@ -124,10 +126,11 @@ export function Calculadora() {
             setEntrada={setEntrada}
             aviso={aviso}
             aoSalvar={() => setHistorico(null)}
+            categorias={categorias}
           />
         )}
         {aba === 'hist' && (
-          <AbaHistorico conexao={conexao} historico={historico} setHistorico={setHistorico} aviso={aviso} />
+          <AbaHistorico conexao={conexao} historico={historico} setHistorico={setHistorico} aviso={aviso} categorias={categorias} />
         )}
         {aba === 'conf' && (
           <AbaConfiguracoes config={config} conexao={conexao} aoSalvarConfig={salvarConfig} aoConectar={novaConexao} />

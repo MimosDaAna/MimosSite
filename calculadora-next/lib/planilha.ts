@@ -5,7 +5,8 @@ import type { Conexao } from './tipos';
  * já abre conectada em qualquer aparelho.
  */
 export const PLANILHA_URL =
-  'https://script.google.com/macros/s/AKfycbyYFBX7wBzpDgy6oBnpP-McXeg0oGuQVAJDLVBRR3kJbk3ZaAqj5Y7nfHGPaF8C7R0UAQ/exec';
+  process.env.NEXT_PUBLIC_PLANILHA_URL ||
+  'https://script.google.com/macros/s/AKfycbwgNVYMIlRJA5q058-t3hwfq7FtW7ZCq-lSn6B8utm3lHFkbehfAyCe-IvMyV8oicvzOA/exec';
 
 /**
  * Senha enviada automaticamente. Fica vazia porque o script (Codigo.gs) está

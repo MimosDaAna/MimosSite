@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { brl, num } from '@/lib/formato';
 import { api } from '@/lib/planilha';
 import { linkFoto } from '@/lib/foto';
+import { EditorCatalogo } from './EditorCatalogo';
 import { FotoProduto } from './FotoProduto';
 import type { Conexao, ItemHistorico, TipoAviso } from '@/lib/tipos';
 
@@ -13,14 +14,16 @@ interface Props {
   historico: ItemHistorico[] | null;
   setHistorico: (h: ItemHistorico[] | null) => void;
   aviso: (msg: string, tipo?: TipoAviso) => void;
+  categorias: string[];
 }
 
 function Vazio({ titulo, texto }: { titulo: string; texto: string }) {
   return <div className="empty"><b>{titulo}</b>{texto}</div>;
 }
 
-export function AbaHistorico({ conexao, historico, setHistorico, aviso }: Props) {
+export function AbaHistorico({ conexao, historico, setHistorico, aviso, categorias }: Props) {
   const [busca, setBusca] = useState('');
+  const [editando, setEditando] = useState('');
   const [erro, setErro] = useState('');
 
   useEffect(() => {
@@ -77,6 +80,10 @@ export function AbaHistorico({ conexao, historico, setHistorico, aviso }: Props)
                   custo {brl(num(i.custoBase))} × {num(i.multiplicador)}
                 </p>
                 {i.observacoes && <p>{i.observacoes}</p>}
+                <button type="button" className={`selo-catalogo ${i.catalogo ? 'ativo' : ''}`}
+                  onClick={() => setEditando(editando === String(i.id) ? '' : String(i.id))}>
+                  {i.catalogo ? (i.destaque ? '★ Destaque' : '✓ No catálogo') : '+ Catálogo'}{i.categoria ? ` · ${i.categoria}` : ''} · ✎ editar
+                </button>
               </div>
               <div className="val">
                 {brl(num(i.precoFinal))}
@@ -84,6 +91,11 @@ export function AbaHistorico({ conexao, historico, setHistorico, aviso }: Props)
               </div>
               <button className="icon-btn del" type="button" title="Apagar" aria-label="Apagar cálculo"
                 onClick={() => apagar(String(i.id))}>×</button>
+              {editando === String(i.id) && (
+                <EditorCatalogo item={i} conexao={conexao} categorias={categorias} aviso={aviso}
+                  fechar={() => setEditando('')}
+                  aoSalvar={novo => setHistorico((historico ?? []).map(x => (String(x.id) === String(i.id) ? novo : x)))} />
+              )}
             </div>
           );
         });

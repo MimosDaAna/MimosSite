@@ -300,3 +300,101 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); box-shad
   .hist-item .val { grid-column: 1 / -1; }
   .hist-foto { width: 56px; height: 56px; }
 }
+
+/* Catálogo vindo da planilha */
+.produto-foto .sem-foto-grande, .foto-grande .sem-foto-grande {
+  width: 100%; height: 100%; display: grid; place-items: center; font-size: 56px; color: var(--pink);
+}
+.foto-grande { overflow: hidden; }
+.foto-grande img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.descricao { white-space: pre-line; }
+.produto.carregando .produto-foto { animation: pulsar 1.2s ease-in-out infinite; cursor: default; }
+@keyframes pulsar { 50% { opacity: .55; } }
+@media (prefers-reduced-motion: reduce) { .produto.carregando .produto-foto { animation: none; } }
+
+/* "Mostrar no catálogo" */
+.catalogo-campos { display: flex; flex-direction: column; gap: 12px; padding: 12px; border-radius: 16px; background: var(--pink-soft); }
+.check { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
+.check input { width: 20px; height: 20px; margin: 2px 0 0; flex: none; accent-color: var(--green-dark); }
+.check span { display: flex; flex-direction: column; gap: 2px; color: var(--ink); }
+.check small { font-weight: 600; color: var(--gray); }
+.selo-catalogo {
+  margin-top: 6px; border: 1px dashed var(--line); background: #fff; color: var(--gray);
+  font: inherit; font-size: 12.5px; font-weight: 800; padding: 3px 10px; border-radius: 999px; cursor: pointer;
+}
+.selo-catalogo.ativo { border-style: solid; border-color: transparent; background: var(--pink-soft); color: var(--pink-dark); }
+.editor-catalogo { grid-column: 1 / -1; padding: 12px; border-radius: 16px; background: #fff; display: flex; flex-direction: column; gap: 12px; }
+.editor-catalogo .actions { display: flex; gap: 8px; }
+
+/* ───────── Loja (catálogo e orçamento) ───────── */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+.topo-loja { margin-bottom: 16px; }
+
+.barra-topo { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 26px; }
+.busca { position: relative; flex: 1 1 280px; display: block; }
+.busca input { width: 100%; padding-left: 42px; background: #fff; border-radius: 999px; height: 48px; }
+.lupa { position: absolute; left: 16px; top: 50%; transform: translateY(-52%); font-size: 22px; color: var(--green); pointer-events: none; }
+.barra-botoes { display: flex; gap: 10px; flex-wrap: wrap; }
+.barra-botoes .btn, .voltar { height: 48px; border-radius: 999px; padding: 0 20px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+.barra-botoes .btn[aria-current="page"] { box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--pink); }
+.voltar { margin-right: auto; }
+
+.secao { margin-bottom: 30px; }
+.titulo-secao {
+  display: flex; align-items: center; gap: 10px; margin: 0 0 14px;
+  font-family: var(--font-dancing), cursive; font-weight: 700; font-size: 34px; line-height: 1.1; color: var(--green-dark);
+}
+.titulo-secao span { font-family: var(--font-nunito), sans-serif; font-size: 20px; color: var(--pink); }
+.categorias { margin: 0 0 18px; }
+.categorias button[aria-pressed="true"] { background: var(--green); color: #fff; box-shadow: 0 6px 16px rgba(79,174,102,.35); }
+
+/* Cards de produto */
+.vitrine > .produto { min-width: 0; }
+.produto-nome { margin: 0; }
+.produto-resumo {
+  margin: 0; color: var(--gray); font-size: 14px;
+  display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.vitrine.destaques { grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 22px; }
+.produto.grande .produto-nome { font-size: 20px; }
+.produto.grande .preco-produto { font-size: 38px; }
+.produto-rodape .btn.whatsapp:not(:empty) { width: auto; padding: 0 18px; gap: 8px; border-radius: 999px; }
+
+/* Orçamento */
+.orcamento-caixa { max-width: 760px; margin: 0 auto; }
+.card.orcamento { padding: 26px 30px; }
+.orcamento .hint { margin: -4px 0 18px; font-size: 14px; }
+.orcamento textarea { min-height: 130px; }
+.orcamento .dica { color: var(--gray); font-weight: 600; }
+.rotulo { display: block; font-size: 13px; font-weight: 700; color: var(--gray); margin-bottom: 5px; }
+.envio-foto {
+  display: grid; place-items: center; min-height: 190px; cursor: pointer; overflow: hidden;
+  border: 2px dashed var(--pink); border-radius: 22px; background: var(--pink-soft); text-align: center;
+}
+.envio-foto:hover, .envio-foto:focus-within { border-color: var(--pink-dark); background: #fbdfe8; }
+.envio-foto.com-foto { background: #fff; border-style: solid; border-color: var(--line); }
+.envio-foto img { width: 100%; max-height: 320px; object-fit: contain; display: block; }
+.envio-vazio { display: grid; gap: 4px; padding: 20px; color: var(--pink-dark); }
+.envio-icone { font-size: 34px; }
+.envio-vazio small { color: var(--gray); }
+.trocar { margin-top: 8px; }
+.orcamento .erro { margin: 14px 0 0; color: var(--pink-dark); font-weight: 700; }
+.orcamento .enviar { width: 100%; margin-top: 20px; height: 52px; font-size: 16px; gap: 8px; }
+.orcamento-ok { text-align: center; padding: 16px 0; display: grid; gap: 10px; justify-items: center; }
+.orcamento-ok h2 { margin: 0; font-family: var(--font-dancing), cursive; font-size: 40px; color: var(--green-dark); }
+.orcamento-ok p { margin: 0; max-width: 440px; color: var(--ink); }
+.ok-icone { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; font-size: 30px; color: #fff; background: var(--pink); }
+.acoes-ok { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 6px; }
+.acoes-ok .btn { gap: 8px; text-decoration: none; }
+
+@media (max-width: 640px) {
+  .barra-botoes { width: 100%; }
+  .barra-botoes .btn { flex: 1; justify-content: center; padding: 0 12px; }
+  .card.orcamento { padding: 22px 18px; }
+  .titulo-secao { font-size: 30px; }
+}
+.tag.destaque { background: #fff4d6; color: #9a6a00; }

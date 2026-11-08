@@ -1,101 +1,80 @@
-import { calcular, OUTRO, PADRAO } from './calculo';
-import type { Config } from './tipos';
+import { PLANILHA_URL } from './planilha';
+import type { ItemCatalogo } from './tipos';
 
-/**
- * Produtos do catálogo, copiados da coleção pública do MakerWorld:
- * https://makerworld.com/pt/collections/39263028-catalog
- *
- * O site não consegue ler o MakerWorld sozinho (o MakerWorld bloqueia),
- * então, ao adicionar um modelo na coleção, inclua um item novo aqui.
- */
 /**
  * Número do WhatsApp que recebe os pedidos: só dígitos, com 55 + DDD.
  * Ex.: '5511912345678'. Vazio = o WhatsApp pede para escolher o contato.
  */
 export const WHATSAPP = '5513996675721';
 
-export interface FilamentoProduto {
-  tipo: string;
-  /** Cor em hexadecimal, como aparece no perfil de impressão. */
-  cor: string;
-  gramas: number;
-}
-
-export interface Produto {
-  id: number;
-  nome: string;
-  descricao: string;
-  destaques: string[];
-  tags: string[];
-  imagens: string[];
-  /** Perfil de impressão usado para calcular o preço. */
-  perfil: { nome: string; segundos: number; filamentos: FilamentoProduto[] };
-  designer: string;
-  licenca: string;
-  link: string;
-  /** Use para fixar um preço diferente do calculado. */
-  precoManual?: number;
-}
-
-const IMG = 'https://makerworld.bblmw.com/makerworld/model/US5b4d59e85f2adc/design/';
-
-export const PRODUTOS: Produto[] = [
-  {
-    id: 2305926,
-    nome: 'Esqueleto Wither articulado (Minecraft)',
-    descricao:
-      'Esqueleto Wither com braços, pernas e cabeça móveis, inspirado no brinquedo oficial do Minecraft. Vem com a espada do jogo, que encaixa em qualquer uma das mãos.',
-    destaques: [
-      'Totalmente articulado',
-      'Relevo e textura na cabeça e no corpo',
-      'Espada encaixa nos dois braços',
-      'Impresso em 4 cores'
-    ],
-    tags: ['Minecraft', 'Articulado', 'Games'],
-    imagens: [
-      IMG + '41d3e87b3373bda5.png',
-      IMG + '63e83d54363851c9.png',
-      IMG + '083b88a6b15837f6.png',
-      IMG + '519df17f9a198505.png',
-      IMG + 'b90a82446516a207.png'
-    ],
-    perfil: {
-      nome: '0,2 mm, 2 paredes, 15% de preenchimento',
-      segundos: 8931,
-      filamentos: [
-        { tipo: 'PLA', cor: '#545454', gramas: 29 },
-        { tipo: 'PLA', cor: '#000000', gramas: 7 },
-        { tipo: 'PLA', cor: '#FFFFFF', gramas: 4 },
-        { tipo: 'PLA', cor: '#6F5034', gramas: 4 }
-      ]
-    },
-    designer: 'RoboDIYer',
-    licenca: 'Standard Digital File License',
-    link: 'https://makerworld.com/pt/models/2305926-minecraft-wither-skeleton-articulated'
-  }
-];
-
-/** Preço pela mesma fórmula da calculadora, com os valores padrão. */
-export function precoProduto(p: Produto, config: Config = PADRAO): number {
-  if (p.precoManual) return p.precoManual;
-  const precoKg = (tipo: string) =>
-    config.filamentos.find(f => f.nome.toLowerCase().startsWith(tipo.toLowerCase()))?.preco
-    ?? config.filamentos[0]?.preco ?? 0;
-  const horas = p.perfil.segundos / 3600;
-  return calcular({
-    produto: p.nome, link: p.link, quantidade: '1', obs: '',
-    horas: String(Math.floor(horas)), minutos: String((horas % 1) * 60),
-    mult: String(config.mult), taxa: '0',
-    filamentos: p.perfil.filamentos.map((f, i) => ({
-      id: i, nome: OUTRO, preco: String(precoKg(f.tipo)), gramas: String(f.gramas)
-    })),
-    foto: ''
-  }, config).precoFinal;
+/**
+ * Busca na planilha os produtos marcados com "Mostrar no catálogo".
+ * O cadastro é feito na calculadora (aba Calcular ou Histórico → ✎ editar).
+ * Esta ação do script é pública e não devolve custos, só nome, foto, preço,
+ * descrição e categoria.
+ */
+export async function carregarCatalogo(): Promise<ItemCatalogo[]> {
+  const r = await fetch(PLANILHA_URL, { method: 'POST', body: JSON.stringify({ action: 'catalogo' }) });
+  const dados = await r.json();
+  if (!dados.ok) throw new Error(dados.erro || 'Erro na planilha');
+  return (dados.itens as ItemCatalogo[]).map(i => ({
+    ...i,
+    id: String(i.id),
+    nome: String(i.nome ?? ''),
+    preco: Number(i.preco) || 0,
+    foto: String(i.foto ?? ''),
+    descricao: String(i.descricao ?? ''),
+    categoria: String(i.categoria ?? '').trim(),
+    destaque: !!i.destaque
+  }));
 }
 
 /** Link que abre a conversa no WhatsApp com o produto já escrito. */
-export function linkWhatsapp(p: Produto, preco: number, paginaProduto: string): string {
-  const valor = preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+export function linkWhatsapp(p: ItemCatalogo, paginaProduto: string): string {
+  const valor = p.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   const texto = `Olá, Mimos da Ana! 🐘\nTenho interesse neste produto:\n*${p.nome}* (${valor})\n${paginaProduto}`;
   return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(texto)}`;
+}
+
+/** "Fale conosco": abre a conversa sem produto. */
+export function linkFaleConosco(): string {
+  const texto = 'Olá, Mimos da Ana! 🐘\nVim pelo catálogo e gostaria de falar com vocês.';
+  return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(texto)}`;
+}
+
+export interface PedidoOrcamento {
+  nome: string;
+  quantidade: number;
+  descricao: string;
+}
+
+/** Mensagem do pedido de orçamento, com o número e o link da foto (se houver). */
+export function linkOrcamento(p: PedidoOrcamento, numero: string, foto: string): string {
+  const linhas = [
+    'Olá, Mimos da Ana! 🐘',
+    'Gostaria de um orçamento:',
+    '',
+    `*Nome:* ${p.nome}`,
+    `*Quantidade:* ${p.quantidade} ${p.quantidade === 1 ? 'peça' : 'peças'}`,
+    `*Descrição:* ${p.descricao}`
+  ];
+  if (foto) linhas.push(`*Foto:* ${foto}`);
+  if (numero) linhas.push('', `Pedido ${numero}`);
+  return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(linhas.join('\n'))}`;
+}
+
+/** Grava o pedido de orçamento na aba Orçamentos da planilha (ação pública do script). */
+export async function enviarOrcamento(
+  p: PedidoOrcamento, fotoBase64: string
+): Promise<{ id: string; foto: string }> {
+  const r = await fetch(PLANILHA_URL, {
+    method: 'POST',
+    body: JSON.stringify({
+      action: 'orcamento',
+      data: { ...p, ...(fotoBase64 ? { fotoBase64, fotoTipo: 'image/jpeg' } : {}) }
+    })
+  });
+  const dados = await r.json();
+  if (!dados.ok) throw new Error(dados.erro || 'Erro na planilha');
+  return { id: String(dados.id || ''), foto: String(dados.foto || '') };
 }

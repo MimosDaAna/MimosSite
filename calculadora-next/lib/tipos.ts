@@ -42,6 +42,12 @@ export interface EntradaCalculo {
   filamentos: LinhaFilamento[];
   /** Foto do produto: imagem já reduzida (data URL) ou link de uma imagem. */
   foto: string;
+  /** Mostrar este produto no catálogo público. */
+  catalogo: boolean;
+  descricao: string;
+  categoria: string;
+  /** Aparece em "Produtos em destaque", no topo do catálogo. */
+  destaque: boolean;
 }
 
 /** Formato gravado na planilha (mesmos nomes que o Apps Script espera). */
@@ -66,6 +72,10 @@ export interface DadosCalculo {
   fotoTipo?: string;
   /** Ou um link de imagem já publicado. */
   fotoUrl?: string;
+  catalogo?: boolean;
+  descricao?: string;
+  categoria?: string;
+  destaque?: boolean;
 }
 
 export interface ItemHistorico {
@@ -83,6 +93,22 @@ export interface ItemHistorico {
   precoTotal: number;
   observacoes: string;
   foto: string;
+  catalogo: boolean;
+  descricao: string;
+  categoria: string;
+  /** Aparece em "Produtos em destaque", no topo do catálogo. */
+  destaque: boolean;
+}
+
+/** Produto como o catálogo público recebe da planilha (sem custos). */
+export interface ItemCatalogo {
+  id: string;
+  nome: string;
+  preco: number;
+  foto: string;
+  descricao: string;
+  categoria: string;
+  destaque: boolean;
 }
 
 export type TipoAviso = '' | 'ok' | 'err';
