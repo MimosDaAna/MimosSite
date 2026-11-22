@@ -7,46 +7,29 @@ import { IconeWhatsapp } from './IconeWhatsapp';
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH;
 
 interface Props {
+  /** Linha pequena embaixo do nome (etiqueta em fonte de máquina). */
   subtitulo: string;
-  /** Com busca: mostra a barra de pesquisa. Sem: mostra "Voltar ao catálogo". */
-  busca?: { valor: string; mudar: (v: string) => void };
-  /** Página atual, para marcar o botão. */
+  /** Página atual, para marcar o link. */
   pagina: 'catalogo' | 'orcamento';
 }
 
-/** Cabeçalho + barra com pesquisa, Fale conosco e Orçamento. */
-export function TopoLoja({ subtitulo, busca, pagina }: Props) {
+/** Cabeçalho da loja: marca, menu e botão do WhatsApp. */
+export function TopoLoja({ subtitulo, pagina }: Props) {
   return (
-    <>
-      <header className="topo-loja">
+    <header className="lj-topo">
+      <Link className="lj-marca" href="/">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="logo" src={`${BASE}/logo.jpg`} alt="Logo Mimos da Ana" />
-        <div className="brand">
-          <h1>Mimos da Ana</h1>
-          <p>{subtitulo}</p>
-        </div>
-      </header>
-
-      <div className="barra-topo">
-        {busca ? (
-          <label className="busca">
-            <span className="sr-only">Buscar no catálogo</span>
-            <span className="lupa" aria-hidden="true">⌕</span>
-            <input type="search" placeholder="Buscar no catálogo..." value={busca.valor}
-              onChange={e => busca.mudar(e.target.value)} />
-          </label>
-        ) : (
-          <Link className="btn ghost voltar" href="/">← Voltar ao catálogo</Link>
-        )}
-        <div className="barra-botoes">
-          <a className="btn whatsapp" href={linkFaleConosco()} target="_blank" rel="noopener noreferrer">
-            <IconeWhatsapp /> Fale conosco
-          </a>
-          <Link className="btn pink" href="/orcamento/" aria-current={pagina === 'orcamento' ? 'page' : undefined}>
-            ✎ Orçamento
-          </Link>
-        </div>
-      </div>
-    </>
+        <img src={`${BASE}/logo.jpg`} alt="" />
+        <span><b>Mimos da Ana</b><small>{subtitulo}</small></span>
+      </Link>
+      <nav className="lj-menu" aria-label="Seções">
+        <Link href="/#catalogo" aria-current={pagina === 'catalogo' ? 'page' : undefined}>Catálogo</Link>
+        <Link href="/#como">Como é feito</Link>
+        <Link href="/orcamento/" aria-current={pagina === 'orcamento' ? 'page' : undefined}>Orçamento</Link>
+      </nav>
+      <a className="lj-botao zap" href={linkFaleConosco()} target="_blank" rel="noopener noreferrer">
+        <IconeWhatsapp /><span>Chamar no zap</span>
+      </a>
+    </header>
   );
 }

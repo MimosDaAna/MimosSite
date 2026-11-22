@@ -15,6 +15,10 @@ const ABA_CONFIG = 'Configurações';
 const PASTA_FOTOS = 'Mimos da Ana - Fotos';
 const ABA_ORCAMENTOS = 'Orçamentos';
 const COLUNAS_ORCAMENTO = ['ID', 'Data', 'Nome', 'Quantidade', 'Descrição', 'Foto', 'Situação'];
+const ABA_ENCOMENDAS = 'Encomendas';
+// "Dados" guarda a encomenda inteira (JSON) e é o que a página lê;
+// as outras colunas são só para ler a planilha com facilidade.
+const COLUNAS_ENCOMENDA = ['ID', 'Criada em', 'Cliente', 'Entrega', 'Produtos', 'Andamento', 'Observações', 'Dados'];
 
 const COLUNAS = [
   'ID', 'Data', 'Produto', 'Link MakerWorld', 'Quantidade', 'Filamentos',
@@ -44,6 +48,9 @@ function doPost(e) {
       case 'list':       return resposta(listarCalculos(req.limit || 100));
       case 'delete':     return resposta(apagarCalculo(req.id));
       case 'editCatalogo': return resposta(editarCatalogo(req.id, req.data));
+      case 'listEncomendas':  return resposta(listarEncomendas());
+      case 'saveEncomenda':   return resposta(salvarEncomenda(req.data || {}));
+      case 'deleteEncomenda': return resposta(apagarEncomenda(req.id));
       case 'getConfig':  return resposta(lerConfig());
       case 'saveConfig': return resposta(salvarConfig(req.config));
       default:           return resposta({ ok: false, erro: 'Ação desconhecida' });
@@ -242,6 +249,95 @@ function abaOrcamentos() {
   return aba;
 }
 
+/* ───────── Encomendas ───────── */
+
+function listarEncomendas() {
+  const aba = abaEncomendas();
+  if (aba.getLastRow() < 2) return { ok: true, itens: [] };
+  const col = COLUNAS_ENCOMENDA.indexOf('Dados');
+  const linhas = aba.getRange(2, 1, aba.getLastRow() - 1, COLUNAS_ENCOMENDA.length).getValues();
+  const itens = [];
+  linhas.forEach(function (l) {
+    if (!l[0]) return;
+    try {
+      const d = JSON.parse(l[col]);
+      d.id = String(l[0]);
+      itens.push(d);
+    } catch (err) {}
+  });
+  return { ok: true, itens: itens.reverse() };
+}
+
+/** Cria ou atualiza (pelo ID) uma encomenda. */
+function salvarEncomenda(d) {
+  const cliente = String(d.cliente || '').trim().slice(0, 120);
+  if (!cliente) return { ok: false, erro: 'Falta o nome do cliente.' };
+  const itens = (Array.isArray(d.itens) ? d.itens : []).slice(0, 200).map(function (i) {
+    const foto = String(i.foto || '');
+    return {
+      id: String(i.id || Utilities.getUuid().slice(0, 6)),
+      nome: String(i.nome || '').slice(0, 200),
+      quantidade: Math.max(1, Math.min(100000, parseInt(i.quantidade, 10) || 1)),
+      produtoId: String(i.produtoId || ''),
+      foto: /^https?:\/\//.test(foto) ? foto : '',
+      link: String(i.link || '').slice(0, 500),
+      preco: Number(i.preco) || 0,
+      feito: !!i.feito
+    };
+  });
+  const id = String(d.id || ('ENC-' + Utilities.getUuid().slice(0, 6).toUpperCase())).slice(0, 40);
+  const dados = {
+    cliente: cliente,
+    entrega: /^\d{4}-\d{2}-\d{2}$/.test(String(d.entrega)) ? String(d.entrega) : '',
+    obs: String(d.obs || '').slice(0, 4000),
+    criada: String(d.criada || new Date().toISOString()),
+    itens: itens
+  };
+  const feitos = itens.filter(function (i) { return i.feito; }).length;
+  const linhaValores = [
+    id, new Date(dados.criada), cliente,
+    dados.entrega ? "'" + dados.entrega.split('-').reverse().join('/') : '',
+    itens.map(function (i) { return (i.feito ? '✓ ' : '') + i.quantidade + '× ' + i.nome; }).join('\n'),
+    itens.length && feitos === itens.length ? 'Pronta' : feitos + ' de ' + itens.length + ' prontos',
+    dados.obs, JSON.stringify(dados)
+  ];
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const aba = abaEncomendas();
+    const linha = aba.getLastRow() > 1 ? linhaDoId(aba, id) : 0;
+    if (linha) aba.getRange(linha, 1, 1, linhaValores.length).setValues([linhaValores]);
+    else aba.appendRow(linhaValores);
+  } finally {
+    lock.releaseLock();
+  }
+  return { ok: true, id: id };
+}
+
+function apagarEncomenda(id) {
+  const aba = abaEncomendas();
+  const linha = aba.getLastRow() > 1 ? linhaDoId(aba, id) : 0;
+  if (linha) aba.deleteRow(linha);
+  return { ok: true };
+}
+
+function abaEncomendas() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let aba = ss.getSheetByName(ABA_ENCOMENDAS);
+  if (!aba) {
+    aba = ss.insertSheet(ABA_ENCOMENDAS);
+    aba.appendRow(COLUNAS_ENCOMENDA);
+    aba.getRange(1, 1, 1, COLUNAS_ENCOMENDA.length)
+      .setFontWeight('bold').setBackground('#cdeed8').setFontColor('#2f6b45');
+    aba.setFrozenRows(1);
+    aba.getRange('B:B').setNumberFormat('dd/mm/yyyy hh:mm');
+    aba.getRange('E:E').setWrap(true);
+    aba.hideColumns(COLUNAS_ENCOMENDA.indexOf('Dados') + 1);
+  }
+  return aba;
+}
+
 function abaConfig() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   return ss.getSheetByName(ABA_CONFIG) || ss.insertSheet(ABA_CONFIG);
@@ -257,5 +353,6 @@ function configurarPlanilha() {
   abaCalculos();
   abaConfig();
   abaOrcamentos();
+  abaEncomendas();
   pastaFotos();
 }

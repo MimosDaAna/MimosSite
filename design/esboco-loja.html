@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mimos da Ana · esboço</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Grandstander:wght@500;700;800&family=Figtree:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/*
+  ESBOÇO · Mimos da Ana — loja de impressão 3D, fofa
+  Ideia: a linguagem da impressão 3D (linhas de camada, mesa, carretel, etiqueta do fatiador)
+  + adesivos fofos (contorno grosso, sombra dura, leve inclinação). Papel creme no fundo,
+  o verde da marca como "tinta".
+*/
+:root {
+  --papel: #fbf7ec;
+  --papel-2: #f3eddc;
+  --tinta: #1f3a2b;        /* verde quase preto: textos e contornos */
+  --verde: #4fae66;        /* verde da marca */
+  --verde-esc: #2f7a48;
+  --menta: #d6f0dc;
+  --rosa: #ee9bb0;
+  --rosa-claro: #fde3ea;
+  --mel: #f4c95d;
+  --cinza: #6b7368;
+  --borda: 2.5px solid var(--tinta);
+  --sombra: 4px 4px 0 var(--tinta);
+  --sombra-alta: 7px 7px 0 var(--tinta);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  font-family: 'Figtree', system-ui, sans-serif;
+  color: var(--tinta);
+  background-color: var(--papel);
+  /* grão de papel bem leve */
+  background-image: radial-gradient(rgba(31,58,43,.05) 1px, transparent 1px);
+  background-size: 6px 6px;
+  font-size: 16px; line-height: 1.5;
+}
+a { color: inherit; }
+img { display: block; max-width: 100%; }
+.mono { font-family: 'JetBrains Mono', ui-monospace, monospace; font-weight: 500; letter-spacing: .02em; }
+.miolo { max-width: 1160px; margin: 0 auto; padding: 0 20px; }
+
+/* ── Fila de impressão (faixa do topo) ── */
+.fila {
+  background: var(--tinta); color: var(--papel);
+  font-size: 12.5px;
+}
+.fila .miolo { display: flex; align-items: center; gap: 14px; padding-top: 8px; padding-bottom: 8px; }
+.fila .ponto { width: 8px; height: 8px; border-radius: 50%; background: var(--mel); flex: none; animation: piscar 1.4s steps(2) infinite; }
+.fila .barra { flex: 1; max-width: 220px; height: 6px; border-radius: 3px; background: rgba(251,247,236,.18); overflow: hidden; }
+.fila .barra span { display: block; height: 100%; background: var(--mel); width: 0; transition: width .4s linear; }
+.fila .dir { margin-left: auto; opacity: .7; }
+@keyframes piscar { 50% { opacity: .2; } }
+
+/* ── Topo ── */
+.topo { display: flex; align-items: center; gap: 18px; padding: 22px 0; }
+.marca { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.marca img { width: 54px; height: 54px; border-radius: 50%; border: var(--borda); object-fit: cover; background: #fff; }
+.marca b { font-family: 'Grandstander', cursive; font-weight: 800; font-size: 26px; line-height: 1; }
+.marca small { display: block; font-size: 11px; color: var(--cinza); margin-top: 3px; }
+.menu { display: flex; gap: 6px; margin-left: auto; }
+.menu a { text-decoration: none; font-weight: 700; padding: 8px 14px; border-radius: 999px; }
+.menu a:hover { background: var(--menta); }
+
+.botao {
+  display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+  font: 700 16px 'Figtree', sans-serif; text-decoration: none; color: var(--tinta);
+  padding: 12px 22px; border-radius: 14px; border: var(--borda); background: #fff;
+  box-shadow: var(--sombra); transition: transform .12s, box-shadow .12s;
+}
+.botao:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--tinta); }
+.botao:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--tinta); }
+.botao.verde { background: var(--verde); color: #fff; }
+.botao.zap { background: #25d366; color: var(--tinta); padding: 10px 16px; font-size: 15px; }
+.botao svg { width: 20px; height: 20px; }
+
+/* ── Abertura ── */
+.abertura { display: grid; grid-template-columns: 1.05fr .95fr; gap: 40px; align-items: center; padding: 30px 0 70px; }
+.etiqueta {
+  display: inline-block; font-size: 12px; padding: 5px 10px; border: 1.5px solid var(--tinta);
+  border-radius: 6px; background: var(--papel-2);
+}
+h1 {
+  font-family: 'Grandstander', cursive; font-weight: 800;
+  font-size: clamp(42px, 6.4vw, 84px); line-height: .98; letter-spacing: -.01em;
+  margin: 18px 0 20px;
+}
+/* "camada por camada": o texto é pintado com faixas, como as linhas de uma peça impressa */
+.camadas {
+  background: repeating-linear-gradient(180deg, var(--verde) 0 5px, var(--verde-esc) 5px 7px);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.abertura p.lead { font-size: 19px; max-width: 30ch; margin: 0 0 28px; color: #3b5446; }
+.abertura .acoes { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+.rabisco { font-weight: 700; text-decoration: none; position: relative; padding-bottom: 6px; }
+.rabisco svg { position: absolute; left: 0; bottom: -4px; width: 100%; height: 10px; }
+
+/* Mesa de impressão */
+.mesa-caixa { position: relative; padding: 46px 10px 0; }
+.portico {
+  position: absolute; top: 0; left: 0; right: 0; height: 22px;
+  border: var(--borda); border-radius: 11px; background: var(--papel-2);
+}
+.bico {
+  position: absolute; top: -6px; left: 10%; width: 54px;
+  animation: varrer 5.5s ease-in-out infinite alternate;
+}
+@keyframes varrer { to { left: calc(90% - 54px); } }
+.mesa {
+  position: relative; aspect-ratio: 1 / .92; border: var(--borda); border-radius: 26px;
+  background-color: var(--menta);
+  background-image:
+    linear-gradient(rgba(47,122,72,.16) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, rgba(47,122,72,.16) 1.5px, transparent 1.5px);
+  background-size: 28px 28px; background-position: -1px -1px;
+  box-shadow: var(--sombra-alta);
+  display: grid; place-items: center; overflow: hidden;
+}
+.peca {
+  width: 64%; aspect-ratio: 1; border-radius: 50%; border: var(--borda); overflow: hidden;
+  background: #fff; position: relative;
+}
+.peca img { width: 100%; height: 100%; object-fit: cover; }
+.peca .vazio { width: 100%; height: 100%; display: grid; place-items: center; }
+/* a peça "subindo": máscara de camadas revelando de baixo para cima */
+.peca::after {
+  content: ""; position: absolute; inset: 0;
+  background: repeating-linear-gradient(180deg, var(--papel) 0 4px, transparent 4px 6px);
+  animation: subir 5.5s steps(22) infinite;
+}
+@keyframes subir { from { clip-path: inset(0 0 0 0); } to { clip-path: inset(0 0 100% 0); } }
+.ficha {
+  position: absolute; right: -6px; bottom: 26px; transform: rotate(3deg);
+  background: #fff; border: var(--borda); border-radius: 10px; padding: 8px 12px; font-size: 12px;
+  box-shadow: var(--sombra);
+}
+.ficha b { font-family: 'Grandstander', cursive; font-size: 17px; display: block; }
+.adesivo {
+  position: absolute; left: -10px; top: 70px; transform: rotate(-9deg);
+  background: var(--rosa); color: var(--tinta); border: var(--borda); border-radius: 999px;
+  padding: 8px 14px; font-family: 'Grandstander', cursive; font-weight: 700; font-size: 15px;
+  box-shadow: var(--sombra);
+}
+
+/* ── Carretéis (categorias) ── */
+.secao { padding: 10px 0 70px; }
+.titulo {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  margin-bottom: 26px;
+}
+.titulo h2 { font-family: 'Grandstander', cursive; font-weight: 800; font-size: clamp(30px, 4vw, 44px); margin: 0; line-height: 1.05; }
+.titulo .mono { font-size: 13px; color: var(--cinza); }
+.carreteis { display: flex; gap: 14px; overflow-x: auto; padding: 4px 4px 14px; margin-bottom: 18px; scrollbar-width: thin; }
+.carretel {
+  flex: none; display: flex; align-items: center; gap: 10px; cursor: pointer;
+  padding: 8px 18px 8px 8px; border-radius: 999px; border: var(--borda); background: #fff;
+  font: 700 15px 'Figtree', sans-serif; color: var(--tinta);
+  transition: transform .12s, box-shadow .12s;
+}
+.carretel svg { width: 34px; height: 34px; flex: none; }
+.carretel:hover { transform: translateY(-2px); }
+.carretel[aria-pressed="true"] { background: var(--tinta); color: var(--papel); box-shadow: var(--sombra); }
+
+/* ── Vitrine (cards adesivo) ── */
+.vitrine { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 30px 26px; }
+.card {
+  position: relative; background: #fff; border: var(--borda); border-radius: 22px;
+  box-shadow: var(--sombra); padding: 12px 12px 16px; display: flex; flex-direction: column; gap: 10px;
+  transition: transform .15s, box-shadow .15s;
+}
+.card:nth-child(4n+1) { transform: rotate(-1.2deg); }
+.card:nth-child(4n+2) { transform: rotate(.8deg); }
+.card:nth-child(4n+3) { transform: rotate(-.4deg); }
+.card:nth-child(4n)   { transform: rotate(1.3deg); }
+.card:hover { transform: rotate(0) translate(-3px, -4px); box-shadow: var(--sombra-alta); }
+.card .foto {
+  aspect-ratio: 1; border-radius: 14px; overflow: hidden; border: 2px solid var(--tinta);
+  background-color: var(--menta);
+  background-image: repeating-linear-gradient(180deg, transparent 0 9px, rgba(47,122,72,.09) 9px 11px);
+}
+.card .foto img { width: 100%; height: 100%; object-fit: cover; }
+.card .foto .vazio { width: 100%; height: 100%; display: grid; place-items: center; }
+.card .chip {
+  position: absolute; top: 2px; left: 22px; transform: translateY(-50%);
+  font-size: 11px; background: var(--mel); border: 2px solid var(--tinta); border-radius: 6px; padding: 2px 8px;
+}
+.card .chip.rosa { background: var(--rosa); }
+.card h3 { margin: 0; font-size: 17px; line-height: 1.25; font-weight: 700; }
+.card .cores { display: flex; gap: 5px; }
+.card .cores i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--tinta); }
+.card .rodape { display: flex; align-items: center; justify-content: space-between; margin-top: auto; gap: 10px; }
+.preco { font-family: 'Grandstander', cursive; font-weight: 800; font-size: 26px; line-height: 1; }
+.preco small { font-family: 'Figtree', sans-serif; font-size: 12px; font-weight: 600; color: var(--cinza); display: block; margin-bottom: 2px; }
+.quero {
+  border: var(--borda); background: var(--verde); color: #fff; border-radius: 12px; padding: 8px 14px;
+  font: 700 14px 'Figtree', sans-serif; cursor: pointer; text-decoration: none; box-shadow: 3px 3px 0 var(--tinta);
+}
+.quero:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--tinta); }
+
+/* ── Como nasce um mimo: camadas empilhadas ── */
+.nasce { display: grid; grid-template-columns: .8fr 1.2fr; gap: 40px; align-items: end; }
+.nasce p { font-size: 18px; color: #3b5446; max-width: 34ch; }
+.pilha { display: flex; flex-direction: column-reverse; align-items: center; gap: 6px; }
+.camada {
+  width: var(--w); border: var(--borda); border-radius: 12px; padding: 12px 16px;
+  display: flex; align-items: center; gap: 12px; background: var(--c);
+}
+.camada .mono { font-size: 12px; opacity: .75; flex: none; }
+.camada b { font-weight: 700; }
+.camada span:last-child { margin-left: auto; font-size: 14px; color: #3b5446; text-align: right; }
+
+/* ── Bilhete: encomenda personalizada ── */
+.bilhete {
+  position: relative; max-width: 760px; margin: 0 auto; padding: 38px 40px;
+  background: #fffdf6; border: var(--borda); border-radius: 6px; transform: rotate(-1deg);
+  box-shadow: var(--sombra-alta);
+  background-image: repeating-linear-gradient(180deg, transparent 0 31px, rgba(47,122,72,.14) 31px 32px);
+  background-position: 0 22px;
+}
+.bilhete::before, .bilhete::after {
+  content: ""; position: absolute; top: -14px; width: 110px; height: 30px;
+  background: rgba(238,155,176,.75); border: 1.5px dashed rgba(31,58,43,.35);
+}
+.bilhete::before { left: 30px; transform: rotate(-6deg); }
+.bilhete::after { right: 30px; transform: rotate(5deg); background: rgba(244,201,93,.75); }
+.bilhete h2 { font-family: 'Grandstander', cursive; font-weight: 800; font-size: clamp(28px, 4vw, 40px); margin: 0 0 8px; line-height: 1.1; }
+.bilhete p { margin: 0 0 22px; font-size: 18px; max-width: 46ch; }
+.bilhete .acoes { display: flex; gap: 14px; flex-wrap: wrap; }
+
+/* ── Rodapé ── */
+footer { margin-top: 80px; border-top: var(--borda); padding: 26px 0 40px; font-size: 14px; }
+footer .miolo { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+footer b { font-family: 'Grandstander', cursive; font-size: 20px; }
+
+.selo-esboco {
+  position: fixed; right: 14px; bottom: 14px; z-index: 5; font-size: 11px;
+  background: var(--tinta); color: var(--papel); padding: 6px 10px; border-radius: 6px;
+}
+
+@media (max-width: 860px) {
+  .abertura, .nasce { grid-template-columns: 1fr; }
+  .abertura { padding-top: 10px; gap: 30px; }
+  .menu { display: none; }
+  .topo .botao.zap { margin-left: auto; }
+  .pilha .camada { width: 100% !important; }
+}
+@media (max-width: 520px) {
+  .fila .barra, .fila .dir { display: none; }
+  .marca small { display: none; }
+  .topo .botao.zap span { display: none; }
+  .bilhete { padding: 30px 22px; }
+  .camada { flex-wrap: wrap; }
+  .camada span:last-child { margin-left: 0; text-align: left; width: 100%; }
+  .vitrine { grid-template-columns: 1fr 1fr; gap: 22px 14px; }
+  .card { padding: 8px 8px 12px; border-radius: 16px; }
+  .card h3 { font-size: 14.5px; }
+  .preco { font-size: 21px; }
+  .quero { padding: 6px 10px; font-size: 13px; }
+  .card .rodape { flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bico, .peca::after, .fila .ponto { animation: none; }
+  .peca::after { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="fila mono" aria-label="Fila de impressão">
+  <div class="miolo">
+    <span class="ponto" aria-hidden="true"></span>
+    <span>IMPRIMINDO AGORA: <b id="fila-nome">Clicker Sapo</b> · camada <b id="fila-camada">0</b>/<span id="fila-total">210</span></span>
+    <span class="barra" aria-hidden="true"><span id="fila-barra"></span></span>
+    <span class="dir">feito à mão, uma camada de cada vez</span>
+  </div>
+</div>
+
+<div class="miolo">
+  <header class="topo">
+    <a class="marca" href="#">
+      <img src="../calculadora-next/public/logo.jpg" alt="">
+      <span><b>Mimos da Ana</b><small class="mono">ateliê de impressão 3D</small></span>
+    </a>
+    <nav class="menu" aria-label="Seções">
+      <a href="#catalogo">Catálogo</a>
+      <a href="#como">Como é feito</a>
+      <a href="#encomenda">Personalizados</a>
+    </nav>
+    <a class="botao zap" href="#" data-zap>
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7a2.8 2.8 0 0 0 1.8-1.3 2.3 2.3 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3Z"/></svg>
+      <span>Chamar no zap</span>
+    </a>
+  </header>
+
+  <section class="abertura">
+    <div>
+      <span class="etiqueta mono">PLA · 0,2 mm · feito sob encomenda</span>
+      <h1>Mimos que nascem <span class="camadas">camada por camada.</span></h1>
+      <p class="lead">Chaveiros, fidgets, enfeites e presentes impressos em 3D, nas cores que você escolher.</p>
+      <div class="acoes">
+        <a class="botao verde" href="#catalogo">Ver o catálogo</a>
+        <a class="rabisco" href="#encomenda">Quero um personalizado
+          <svg viewBox="0 0 200 10" preserveAspectRatio="none" aria-hidden="true"><path d="M2 6 C 30 1, 50 9, 80 5 S 140 2, 198 6" fill="none" stroke="#ee9bb0" stroke-width="3.5" stroke-linecap="round"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="mesa-caixa" aria-hidden="true">
+      <div class="portico"></div>
+      <svg class="bico" viewBox="0 0 54 60">
+        <rect x="3" y="2" width="48" height="30" rx="8" fill="#fff" stroke="#1f3a2b" stroke-width="2.5"/>
+        <circle cx="16" cy="17" r="2.6" fill="#1f3a2b"/><circle cx="38" cy="17" r="2.6" fill="#1f3a2b"/>
+        <path d="M22 23 q5 4 10 0" fill="none" stroke="#1f3a2b" stroke-width="2.2" stroke-linecap="round"/>
+        <circle cx="11" cy="23" r="3" fill="#ee9bb0"/><circle cx="43" cy="23" r="3" fill="#ee9bb0"/>
+        <path d="M20 32 h14 l-4 12 h-6 z" fill="#f4c95d" stroke="#1f3a2b" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="M27 46 v10" stroke="#4fae66" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      <div class="mesa">
+        <div class="peca" id="peca-destaque"></div>
+      </div>
+      <div class="adesivo">feito com amor ♥</div>
+      <div class="ficha mono"><span id="ficha-tempo">tempo · 2h10</span><b id="ficha-nome">Clicker Sapo</b></div>
+    </div>
+  </section>
+
+  <section class="secao" id="catalogo">
+    <div class="titulo">
+      <h2>Saindo da impressora</h2>
+      <span class="mono" id="contagem">carregando o catálogo…</span>
+    </div>
+    <div class="carreteis" id="carreteis" role="group" aria-label="Categorias"></div>
+    <div class="vitrine" id="vitrine"></div>
+  </section>
+
+  <section class="secao" id="como">
+    <div class="nasce">
+      <div>
+        <div class="titulo"><h2>Como nasce um mimo</h2></div>
+        <p>Cada peça é desenhada, fatiada e impressa aqui, camada sobre camada. Depois ganha acabamento e vai embalada com carinho.</p>
+      </div>
+      <div class="pilha">
+        <div class="camada" style="--w:100%;--c:var(--menta)"><span class="mono">01</span><b>Você escolhe</b><span>do catálogo ou uma ideia sua</span></div>
+        <div class="camada" style="--w:90%;--c:#fff"><span class="mono">02</span><b>A gente fatia</b><span>cor, tamanho e prazo combinados</span></div>
+        <div class="camada" style="--w:78%;--c:var(--rosa-claro)"><span class="mono">03</span><b>A impressora trabalha</b><span>de 1 a 12 horas por peça</span></div>
+        <div class="camada" style="--w:64%;--c:#fff4d6"><span class="mono">04</span><b>Acabamento e laço</b><span>pronto pra presentear</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="secao" id="encomenda">
+    <div class="bilhete">
+      <h2>Tem uma ideia? A gente imprime.</h2>
+      <p>Nome no chaveiro, a cor do time, um bichinho igual ao seu. Mande uma foto ou descreva, e respondemos com o orçamento.</p>
+      <div class="acoes">
+        <a class="botao verde" href="#">Pedir orçamento</a>
+        <a class="botao" href="#" data-zap>Falar no WhatsApp</a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="miolo">
+    <b>Mimos da Ana</b>
+    <span class="mono">impressão 3D · pedidos pelo WhatsApp</span>
+  </div>
+</footer>
+
+<span class="selo-esboco mono">ESBOÇO v1</span>
+
+<script>
+const PLANILHA = 'https://script.google.com/macros/s/AKfycbwimOWDflxeWmJnFfoVdAKmVvCwniKrDGnIrErC_A3ajwHp_REw35n2DHTHFPa09W2TSg/exec';
+
+// Usados só se o catálogo não carregar (ex.: sem internet).
+const EXEMPLOS = [
+  { nome: 'Clicker Sapo', preco: 18, categoria: 'Fidgets', destaque: true },
+  { nome: 'Fidget Flor Giratória', preco: 22, categoria: 'Fidgets' },
+  { nome: 'Pokebola', preco: 20.67, categoria: 'Geek' },
+  { nome: 'Pirâmide Articulada', preco: 25, categoria: 'Fidgets' },
+  { nome: 'Bola de Natal de Rena', preco: 15, categoria: 'Natal' },
+  { nome: 'Suporte de talher', preco: 28, categoria: 'Casa' }
+];
+const CORES = [['#4fae66', '#fff', '#ee9bb0'], ['#f4c95d', '#4fae66'], ['#ee9bb0', '#fff', '#1f3a2b'], ['#d6f0dc', '#f4c95d', '#ee9bb0']];
+const TINTA_CARRETEL = ['#4fae66', '#ee9bb0', '#f4c95d', '#8fc9e8', '#c7a6e6', '#ff9f6b'];
+
+// Mesmo número e mesmas mensagens do site atual (lib/catalogo.ts).
+const WHATSAPP = '5513996675721';
+const zap = texto => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(texto)}`;
+const paginaProduto = p => `${location.origin}${location.pathname}#produto-${p.id}`;
+const linkQuero = p => zap(`Olá, Mimos da Ana! 🐘\nTenho interesse neste produto:\n*${p.nome}* (${brl(p.preco)})${p.id ? '\n' + paginaProduto(p) : ''}`);
+const LINK_FALE = zap('Olá, Mimos da Ana! 🐘\nVim pelo catálogo e gostaria de falar com vocês.');
+document.querySelectorAll('[data-zap]').forEach(a => { a.href = LINK_FALE; a.target = '_blank'; a.rel = 'noopener noreferrer'; });
+
+const brl = v => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+function fotoUrl(url) {
+  const m = String(url || '').match(/[?&]id=([\w-]{20,})|\/d\/([\w-]{20,})/);
+  return m ? `https://drive.google.com/thumbnail?id=${m[1] || m[2]}&sz=w800` : url;
+}
+
+// Bichinho de reserva quando não há foto.
+const BICHO = `<svg viewBox="0 0 100 100" width="62%" aria-hidden="true">
+  <ellipse cx="50" cy="58" rx="34" ry="28" fill="#fff" stroke="#1f3a2b" stroke-width="3.5"/>
+  <circle cx="26" cy="34" r="11" fill="#fff" stroke="#1f3a2b" stroke-width="3.5"/>
+  <circle cx="74" cy="34" r="11" fill="#fff" stroke="#1f3a2b" stroke-width="3.5"/>
+  <circle cx="40" cy="55" r="3.6" fill="#1f3a2b"/><circle cx="60" cy="55" r="3.6" fill="#1f3a2b"/>
+  <circle cx="32" cy="64" r="4.5" fill="#ee9bb0"/><circle cx="68" cy="64" r="4.5" fill="#ee9bb0"/>
+  <path d="M45 64 q5 5 10 0" fill="none" stroke="#1f3a2b" stroke-width="3" stroke-linecap="round"/></svg>`;
+
+function imagem(p) {
+  return p.foto
+    ? `<img src="${esc(fotoUrl(p.foto))}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'vazio',innerHTML:BICHO}))">`
+    : `<div class="vazio">${BICHO}</div>`;
+}
+
+const carretel = cor => `<svg viewBox="0 0 34 34" aria-hidden="true">
+  <circle cx="17" cy="17" r="15" fill="${cor}" stroke="#1f3a2b" stroke-width="2.5"/>
+  <circle cx="17" cy="17" r="10" fill="none" stroke="#1f3a2b" stroke-width="1" opacity=".35"/>
+  <circle cx="17" cy="17" r="5" fill="#fbf7ec" stroke="#1f3a2b" stroke-width="2.5"/></svg>`;
+
+let produtos = [], categoria = '';
+
+function desenhar() {
+  const lista = produtos.filter(p => !categoria || p.categoria === categoria);
+  document.getElementById('vitrine').innerHTML = lista.map((p, i) => `
+    <article class="card"${p.id ? ` id="produto-${esc(p.id)}"` : ''}>
+      ${p.destaque ? '<span class="chip mono">★ queridinho</span>' : i % 5 === 2 ? '<span class="chip rosa mono">novo</span>' : ''}
+      <div class="foto">${imagem(p)}</div>
+      <h3>${esc(p.nome)}</h3>
+      <div class="cores" title="Cores disponíveis">${CORES[i % CORES.length].map(c => `<i style="background:${c}"></i>`).join('')}</div>
+      <div class="rodape">
+        <div class="preco"><small>a partir de</small>${brl(p.preco)}</div>
+        <a class="quero" href="${esc(linkQuero(p))}" target="_blank" rel="noopener noreferrer" aria-label="Pedir ${esc(p.nome)} pelo WhatsApp">Quero</a>
+      </div>
+    </article>`).join('');
+  document.getElementById('contagem').textContent = `${lista.length} ${lista.length === 1 ? 'peça' : 'peças'} na vitrine`;
+}
+
+function montar(itens) {
+  produtos = itens;
+  const cats = [...new Set(itens.map(p => p.categoria).filter(Boolean))].sort();
+  const box = document.getElementById('carreteis');
+  box.innerHTML = [['', 'Tudo'], ...cats.map(c => [c, c])].map(([v, n], i) =>
+    `<button class="carretel" type="button" data-cat="${esc(v)}" aria-pressed="${v === categoria}">${carretel(i ? TINTA_CARRETEL[(i - 1) % TINTA_CARRETEL.length] : '#fff')}${esc(n)}</button>`
+  ).join('');
+  box.onclick = e => {
+    const b = e.target.closest('.carretel'); if (!b) return;
+    categoria = b.dataset.cat;
+    box.querySelectorAll('.carretel').forEach(x => x.setAttribute('aria-pressed', x === b));
+    desenhar();
+  };
+  desenhar();
+
+  const destaque = itens.find(p => p.destaque && p.foto) || itens.find(p => p.foto) || itens[0];
+  if (destaque) {
+    document.getElementById('peca-destaque').innerHTML = imagem(destaque);
+    document.getElementById('ficha-nome').textContent = destaque.nome;
+    document.getElementById('fila-nome').textContent = destaque.nome;
+    document.getElementById('ficha-tempo').textContent = brl(destaque.preco);
+  }
+}
+
+fetch(PLANILHA, { method: 'POST', body: JSON.stringify({ action: 'catalogo' }) })
+  .then(r => r.json())
+  .then(d => { if (!d.ok || !d.itens.length) throw 0; montar(d.itens); })
+  .catch(() => montar(EXEMPLOS));
+
+// Faixa do topo: contador de camadas.
+const total = 210;
+let camada = 0;
+setInterval(() => {
+  camada = camada >= total ? 0 : camada + 3;
+  document.getElementById('fila-camada').textContent = camada;
+  document.getElementById('fila-barra').style.width = (camada / total * 100) + '%';
+}, 400);
+</script>
+</body>
+</html>

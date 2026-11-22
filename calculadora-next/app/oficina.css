@@ -1,0 +1,236 @@
+/*
+  Tema "oficina" — o mesmo design do esboço da loja (design/esboco-loja.html), no site todo.
+  Papel creme, contorno verde-escuro grosso, sombra "dura" de adesivo, títulos em Grandstander
+  e números em fonte de máquina, como as etiquetas do fatiador.
+  A classe .tema-oficina fica no <body> (app/layout.tsx), então vale para o site todo.
+*/
+.tema-oficina {
+  --papel: #fbf7ec;
+  --papel-2: #f3eddc;
+  --tinta: #1f3a2b;
+  --menta: #d6f0dc;
+  --mel: #f4c95d;
+  --rosa-claro: #fde3ea;
+  --borda: 2.5px solid var(--tinta);
+  --sombra-dura: 4px 4px 0 var(--tinta);
+  --sombra-alta: 6px 6px 0 var(--tinta);
+
+  /* variáveis antigas, reaproveitadas pelos componentes */
+  --ink: var(--tinta);
+  --gray: #5f6a5f;
+  --gray-soft: var(--papel-2);
+  --green-soft: var(--menta);
+  --pink-soft: var(--rosa-claro);
+  --line: rgba(31, 58, 43, .28);
+  --bg-deep: rgba(31, 58, 43, .28);
+  --shadow: var(--sombra-dura);
+  --radius: 22px;
+
+  --titulo: var(--font-grand), 'Comic Sans MS', cursive;
+  --texto: var(--font-figtree), system-ui, sans-serif;
+  --maquina: var(--font-mono), ui-monospace, monospace;
+
+  font-family: var(--texto);
+  color: var(--tinta);
+}
+body.tema-oficina {
+  background-color: #fbf7ec;
+  background-image: radial-gradient(rgba(31, 58, 43, .05) 1px, transparent 1px);
+  background-size: 6px 6px;
+}
+
+/* ── Cabeçalho ── */
+.tema-oficina .wrap > header {
+  border-radius: 22px; background: #fff; backdrop-filter: none;
+  border: var(--borda); box-shadow: var(--sombra-alta);
+  padding: 12px 18px; margin-bottom: 20px;
+}
+.tema-oficina .logo { width: 62px; height: 62px; border: var(--borda); box-shadow: none; }
+.tema-oficina .brand h1 {
+  font-family: var(--titulo); font-weight: 800; font-size: 32px; color: var(--tinta); text-shadow: none;
+}
+.tema-oficina .brand p { font-family: var(--maquina); font-size: 12px; font-weight: 500; letter-spacing: .02em; }
+.tema-oficina .status {
+  font-family: var(--maquina); font-weight: 700; font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em;
+  border-radius: 8px; border: 2px solid var(--tinta); background: var(--papel-2); color: var(--tinta);
+}
+.tema-oficina .status.ok { background: var(--menta); color: var(--tinta); }
+.tema-oficina .status.ok::before { background: var(--green); animation: oficina-piscar 1.4s steps(2) infinite; }
+.tema-oficina .status.err { background: var(--rosa-claro); color: var(--pink-dark); border-color: var(--pink-dark); }
+@keyframes oficina-piscar { 50% { opacity: .25; } }
+
+/* ── Abas (como os carretéis do esboço) ── */
+.tema-oficina .abas button {
+  font-family: var(--texto); font-weight: 700; color: var(--tinta);
+  background: #fff; border: var(--borda); border-radius: 999px;
+  transition: transform .12s, box-shadow .12s;
+}
+.tema-oficina .abas button:hover:not([aria-selected="true"]):not([aria-pressed="true"]) {
+  border-color: var(--tinta); color: var(--tinta); transform: translateY(-2px);
+}
+.tema-oficina .abas button[aria-selected="true"],
+.tema-oficina .abas button[aria-pressed="true"] {
+  background: var(--tinta); color: var(--papel); box-shadow: var(--sombra-dura);
+}
+
+/* ── Cartões ── */
+.tema-oficina .card { border: var(--borda); box-shadow: var(--sombra-alta); }
+.tema-oficina .card h2 { font-family: var(--titulo); font-weight: 800; font-size: 22px; color: var(--tinta); }
+.tema-oficina .card h2 .ico {
+  width: 32px; height: 32px; font-size: 14px; color: var(--tinta);
+  background: var(--mel); border: 2px solid var(--tinta);
+  box-shadow: inset 0 0 0 4px #fff7df;
+}
+.tema-oficina .stack > .card:nth-child(2) h2 .ico { background: var(--menta); }
+.tema-oficina .stack > .card:nth-child(3) h2 .ico { background: var(--pink); }
+.tema-oficina .hint { color: var(--gray); }
+
+/* ── Campos ── */
+.tema-oficina label { color: var(--tinta); font-weight: 700; }
+.tema-oficina label small { color: var(--gray); }
+.tema-oficina input,
+.tema-oficina select,
+.tema-oficina textarea {
+  font-family: var(--texto); color: var(--tinta);
+  border: 2px solid var(--line); border-radius: 12px; background: #fff;
+  transition: border-color .12s, box-shadow .12s;
+}
+.tema-oficina input:focus,
+.tema-oficina select:focus,
+.tema-oficina textarea:focus {
+  border-color: var(--tinta); box-shadow: 3px 3px 0 var(--green);
+}
+.tema-oficina input[type="number"],
+.tema-oficina .unit input { font-family: var(--maquina); font-weight: 500; }
+.tema-oficina .unit span { font-family: var(--maquina); color: var(--gray); font-weight: 500; font-size: 12px; }
+
+/* ── Botões ── */
+.tema-oficina .btn {
+  font-family: var(--texto); font-weight: 700; color: var(--tinta);
+  border: var(--borda); border-radius: 14px; box-shadow: var(--sombra-dura);
+  transition: transform .12s, box-shadow .12s, background .12s;
+}
+.tema-oficina .btn:hover:not(:disabled) { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--tinta); }
+.tema-oficina .btn:active:not(:disabled) { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--tinta); }
+.tema-oficina .btn.primary { background: var(--green); color: #fff; }
+.tema-oficina .btn.primary:hover:not(:disabled) { background: var(--green); }
+.tema-oficina .btn.pink { background: var(--pink); color: var(--tinta); }
+.tema-oficina .btn.pink:hover:not(:disabled) { background: var(--pink); }
+.tema-oficina .btn.ghost { background: #fff; color: var(--tinta); border-color: var(--tinta); }
+.tema-oficina .btn.small { border-radius: 11px; box-shadow: 3px 3px 0 var(--tinta); }
+.tema-oficina .btn:disabled { opacity: .45; box-shadow: none; }
+.tema-oficina .icon-btn {
+  border: 2px solid var(--tinta); border-radius: 11px; color: var(--tinta); background: #fff;
+}
+.tema-oficina .icon-btn:hover { background: var(--rosa-claro); color: var(--pink-dark); }
+
+/* ── Filamentos: faixa com linhas de camada ── */
+.tema-oficina .fil-row {
+  border: 2px solid var(--tinta); border-radius: 16px;
+  background-color: var(--menta);
+  background-image: repeating-linear-gradient(180deg, transparent 0 9px, rgba(47,122,72,.08) 9px 11px);
+}
+
+/* ── Resumo: o preço em cima da "mesa de impressão" ── */
+.tema-oficina .summary { background: #fff; }
+.tema-oficina .cloud {
+  border-radius: 18px; border: var(--borda); box-shadow: none; padding: 22px 12px 18px;
+  background-color: var(--menta);
+  background-image:
+    linear-gradient(rgba(47,122,72,.16) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, rgba(47,122,72,.16) 1.5px, transparent 1.5px);
+  background-size: 22px 22px; background-position: -1px -1px;
+}
+.tema-oficina .cloud small {
+  display: inline-block; font-family: var(--maquina); font-weight: 500; font-size: 11px; text-transform: uppercase;
+  color: var(--tinta); background: #fff; border: 1.5px solid var(--tinta); border-radius: 6px; padding: 2px 8px;
+}
+.tema-oficina .cloud .price {
+  font-family: var(--titulo); font-weight: 800; font-size: 48px; color: var(--tinta); margin-top: 6px;
+}
+.tema-oficina .cloud .total { color: var(--tinta); font-family: var(--maquina); font-size: 13px; }
+.tema-oficina .lines li { border-bottom: 1.5px dashed var(--line); }
+.tema-oficina .lines li span:last-child { font-family: var(--maquina); font-weight: 700; font-size: 13.5px; }
+.tema-oficina .lines li.sub { color: var(--tinta); border-bottom: 2px solid var(--tinta); }
+.tema-oficina .lines li.extra span:first-child { color: var(--pink-dark); }
+
+/* ── Foto e catálogo ── */
+.tema-oficina .foto-campo,
+.tema-oficina .catalogo-campos,
+.tema-oficina .editor-catalogo { border: 2px solid var(--tinta); }
+.tema-oficina .foto-previa { border: 2px dashed var(--tinta); border-radius: 12px; }
+.tema-oficina .check input { accent-color: var(--green); }
+.tema-oficina .check span { color: var(--tinta); }
+.tema-oficina .selo-catalogo { border: 1.5px dashed var(--tinta); color: var(--tinta); font-family: var(--maquina); font-weight: 500; font-size: 11.5px; }
+.tema-oficina .selo-catalogo.ativo { border: 1.5px solid var(--tinta); background: var(--mel); color: var(--tinta); }
+
+/* ── Histórico ── */
+.tema-oficina .hist { gap: 12px; }
+.tema-oficina .hist-item { background: #fff; border: 2px solid var(--tinta); border-radius: 16px; }
+.tema-oficina .hist-item:hover { box-shadow: var(--sombra-dura); }
+.tema-oficina .hist-item h3 { font-weight: 800; }
+.tema-oficina .hist-item h3 a { color: var(--tinta); text-decoration-color: var(--green); text-decoration-thickness: 2px; }
+.tema-oficina .hist-item p { font-family: var(--maquina); font-size: 12px; }
+.tema-oficina .hist-item .val { font-family: var(--titulo); font-weight: 800; color: var(--tinta); font-size: 22px; }
+.tema-oficina .hist-item .val small { font-family: var(--maquina); font-weight: 500; }
+.tema-oficina .hist-foto {
+  border: 2px solid var(--tinta); background-color: var(--menta);
+  background-image: repeating-linear-gradient(180deg, transparent 0 7px, rgba(47,122,72,.1) 7px 9px);
+}
+
+/* ── Encomendas ── */
+.tema-oficina .enc-filtros button span { border: 1.5px solid currentColor; font-family: var(--maquina); }
+.tema-oficina .enc-filtros button[aria-pressed="true"] span { color: var(--tinta); border-color: #fff; }
+.tema-oficina .enc-aviso { border: 2px solid var(--tinta); background: #fff4d6; color: var(--tinta); }
+.tema-oficina .enc-form { border: var(--borda); }
+.tema-oficina .enc-linha { border: 2px solid var(--line); background: var(--papel); }
+.tema-oficina .enc-linha.ligada { border-color: var(--tinta); background: var(--menta); }
+.tema-oficina .enc-thumb { border: 2px solid var(--tinta); }
+.tema-oficina .enc-vinculo { font-family: var(--maquina); font-weight: 500; }
+.tema-oficina .enc-contagem { font-family: var(--maquina); color: var(--tinta); background: var(--mel); border: 1.5px solid var(--tinta); border-radius: 6px; padding: 1px 8px; }
+.tema-oficina .enc-lista { gap: 22px 18px; }
+.tema-oficina .enc-cartao {
+  background: #fff; border: var(--borda); box-shadow: var(--sombra-dura);
+  transition: transform .15s, box-shadow .15s;
+}
+.tema-oficina .enc-cartao:nth-child(3n+1) { transform: rotate(-.6deg); }
+.tema-oficina .enc-cartao:nth-child(3n+2) { transform: rotate(.5deg); }
+.tema-oficina .enc-cartao:hover { transform: none; box-shadow: var(--sombra-alta); }
+.tema-oficina .enc-cartao.pronta { background: var(--menta); border-color: var(--tinta); }
+.tema-oficina .enc-cabeca h3 { font-family: var(--titulo); font-weight: 800; font-size: 21px; }
+.tema-oficina .enc-meta { font-family: var(--maquina); font-weight: 500; font-size: 12px; }
+.tema-oficina .enc-data { color: var(--tinta); }
+.tema-oficina .enc-data.atrasada { color: #fff; background: var(--pink-dark); padding: 0 6px; border-radius: 4px; }
+.tema-oficina .enc-botoes .icon-btn { color: var(--tinta); }
+.tema-oficina .enc-progresso { height: 12px; border: 2px solid var(--tinta); background: var(--papel); }
+.tema-oficina .enc-progresso span {
+  border-radius: 0;
+  background: repeating-linear-gradient(90deg, var(--green) 0 8px, var(--green-dark) 8px 10px);
+}
+.tema-oficina .enc-status { font-family: var(--maquina); font-weight: 700; font-size: 11.5px; text-transform: uppercase; color: var(--tinta); }
+.tema-oficina .enc-itens li { background: var(--papel); border: 1.5px solid var(--line); }
+.tema-oficina .enc-cartao.pronta .enc-itens li { background: #fff; }
+.tema-oficina .enc-check { border: 2.5px solid var(--tinta); }
+.tema-oficina .enc-check:checked { background: var(--green); border-color: var(--tinta); }
+.tema-oficina .enc-item-nome em { font-family: var(--maquina); font-weight: 700; }
+.tema-oficina .enc-item-nome small { font-family: var(--maquina); font-weight: 500; }
+.tema-oficina .enc-link { border: 1.5px solid var(--tinta); }
+
+/* ── Vazio e aviso ── */
+.tema-oficina .empty b { font-family: var(--titulo); font-weight: 800; font-size: 26px; color: var(--tinta); }
+.tema-oficina .toast {
+  font-family: var(--maquina); font-weight: 700; font-size: 13px;
+  border: 2.5px solid var(--tinta); border-radius: 12px; box-shadow: var(--sombra-dura);
+  background: var(--tinta);
+}
+.tema-oficina .toast.ok { background: var(--green); color: var(--tinta); }
+.tema-oficina .toast.err { background: var(--pink); color: var(--tinta); }
+
+@media (max-width: 560px) {
+  .tema-oficina .wrap > header { border-radius: 20px; }
+  .tema-oficina .brand h1 { font-size: 28px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tema-oficina .status.ok::before { animation: none; }
+  .tema-oficina .enc-cartao { transform: none !important; }
+}

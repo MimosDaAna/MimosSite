@@ -1,9 +1,13 @@
 import type { Metadata } from 'next';
-import { Dancing_Script, Nunito } from 'next/font/google';
+import { Figtree, Grandstander, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
+import './oficina.css';
+import './loja.css';
 
-const nunito = Nunito({ subsets: ['latin'], weight: ['400', '600', '700', '800'], variable: '--font-nunito' });
-const dancing = Dancing_Script({ subsets: ['latin'], weight: ['600', '700'], variable: '--font-dancing' });
+// Fontes do design "oficina": títulos fofos, texto simples e etiquetas de máquina.
+const grandstander = Grandstander({ subsets: ['latin'], weight: ['500', '700', '800'], variable: '--font-grand' });
+const figtree = Figtree({ subsets: ['latin'], weight: ['400', '600', '700', '800'], variable: '--font-figtree' });
+const mono = JetBrains_Mono({ subsets: ['latin'], weight: ['500', '700'], variable: '--font-mono' });
 
 export const metadata: Metadata = {
   title: 'Mimos da Ana',
@@ -13,8 +17,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={`${nunito.variable} ${dancing.variable}`}>
-      <body>{children}</body>
+    <html lang="pt-BR" className={`${grandstander.variable} ${figtree.variable} ${mono.variable}`}>
+      <body className="tema-oficina">{children}</body>
     </html>
   );
 }

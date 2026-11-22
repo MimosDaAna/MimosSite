@@ -1,0 +1,275 @@
+/*
+  Loja (catálogo e orçamento) no design "oficina" — igual ao esboço em design/esboco-loja.html.
+  As variáveis (--tinta, --menta, --borda, fontes...) vêm de oficina.css.
+*/
+.lj { min-height: 100vh; display: flex; flex-direction: column; }
+.lj-miolo { width: 100%; max-width: 1160px; margin: 0 auto; padding: 0 20px; }
+
+/* ── Fila de impressão ── */
+.lj-fila { background: var(--tinta); color: var(--papel); font-family: var(--maquina); font-size: 12.5px; }
+.lj-fila .lj-miolo { display: flex; align-items: center; gap: 14px; padding-top: 8px; padding-bottom: 8px; }
+.lj-ponto { width: 8px; height: 8px; border-radius: 50%; background: var(--mel); flex: none; animation: oficina-piscar 1.4s steps(2) infinite; }
+.lj-barra { flex: 1; max-width: 220px; height: 6px; border-radius: 3px; background: rgba(251,247,236,.18); overflow: hidden; }
+.lj-barra span { display: block; height: 100%; background: var(--mel); transition: width .4s linear; }
+.lj-fila-dir { margin-left: auto; opacity: .7; }
+
+/* ── Topo ── */
+.lj-topo {
+  display: flex; align-items: center; gap: 18px; padding: 22px 0; margin: 0;
+  background: none; backdrop-filter: none; box-shadow: none; border-radius: 0; border: 0;
+}
+.lj-marca { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--tinta); }
+.lj-marca img { width: 56px; height: 56px; border-radius: 50%; border: var(--borda); object-fit: cover; background: #fff; }
+.lj-marca b { font-family: var(--titulo); font-weight: 800; font-size: 27px; line-height: 1; display: block; }
+.lj-marca small { display: block; font-family: var(--maquina); font-size: 11.5px; color: var(--gray); margin-top: 4px; }
+.lj-menu { display: flex; gap: 4px; margin-left: auto; }
+.lj-menu a { text-decoration: none; font-weight: 700; padding: 8px 14px; border-radius: 999px; color: var(--tinta); }
+.lj-menu a:hover { background: var(--menta); }
+.lj-menu a[aria-current="page"] { background: var(--tinta); color: var(--papel); }
+
+.lj-botao {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;
+  font: 700 16px var(--texto); text-decoration: none; color: var(--tinta);
+  padding: 12px 22px; border-radius: 14px; border: var(--borda); background: #fff;
+  box-shadow: var(--sombra-dura); transition: transform .12s, box-shadow .12s;
+}
+.lj-botao:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--tinta); }
+.lj-botao:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--tinta); }
+.lj-botao.verde { background: var(--green); color: #fff; }
+.lj-botao.zap { background: #25d366; padding: 10px 16px; font-size: 15px; }
+.lj-botao svg { width: 20px; height: 20px; flex: none; }
+
+/* ── Abertura ── */
+.lj-abertura { display: grid; grid-template-columns: 1.05fr .95fr; gap: 40px; align-items: center; padding: 30px 0 70px; }
+.lj-etiqueta {
+  display: inline-block; font-family: var(--maquina); font-size: 12px; padding: 5px 10px;
+  border: 1.5px solid var(--tinta); border-radius: 6px; background: var(--papel-2);
+}
+.lj h1 {
+  font-family: var(--titulo); font-weight: 800; color: var(--tinta);
+  font-size: clamp(42px, 6.4vw, 84px); line-height: .98; letter-spacing: -.01em; margin: 18px 0 20px;
+}
+.lj-camadas {
+  background: repeating-linear-gradient(180deg, var(--green) 0 5px, var(--green-dark) 5px 7px);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.lj-lead { font-size: 19px; max-width: 30ch; margin: 0 0 28px; color: #3b5446; }
+.lj-acoes { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+.lj-rabisco { font-weight: 700; text-decoration: none; position: relative; padding-bottom: 6px; color: var(--tinta); }
+.lj-rabisco svg { position: absolute; left: 0; bottom: -4px; width: 100%; height: 10px; }
+
+/* Mesa de impressão */
+.lj-mesa-caixa { position: relative; padding: 46px 10px 0; }
+.lj-portico { position: absolute; top: 0; left: 0; right: 0; height: 22px; border: var(--borda); border-radius: 11px; background: var(--papel-2); }
+.lj-bico { position: absolute; top: -6px; left: 10%; width: 54px; animation: lj-varrer 5.5s ease-in-out infinite alternate; }
+@keyframes lj-varrer { to { left: calc(90% - 54px); } }
+.lj-mesa {
+  position: relative; aspect-ratio: 1 / .92; border: var(--borda); border-radius: 26px;
+  background-color: var(--menta);
+  background-image:
+    linear-gradient(rgba(47,122,72,.16) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, rgba(47,122,72,.16) 1.5px, transparent 1.5px);
+  background-size: 28px 28px; background-position: -1px -1px;
+  box-shadow: 7px 7px 0 var(--tinta); display: grid; place-items: center; overflow: hidden;
+}
+.lj-peca {
+  width: 64%; aspect-ratio: 1; border-radius: 50%; border: var(--borda); overflow: hidden;
+  background: #fff; position: relative; padding: 0; cursor: pointer;
+}
+.lj-peca img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* a peça "subindo": faixas que vão sumindo de baixo para cima */
+.lj-peca::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(180deg, var(--papel) 0 4px, transparent 4px 6px);
+  animation: lj-subir 5.5s steps(22) forwards;
+}
+@keyframes lj-subir { from { clip-path: inset(0 0 0 0); } to { clip-path: inset(0 0 100% 0); } }
+.lj-peca.carregando { animation: pulsar 1.2s ease-in-out infinite; cursor: default; }
+.lj-ficha {
+  position: absolute; right: -6px; bottom: 26px; transform: rotate(3deg); cursor: pointer; text-align: left;
+  background: #fff; border: var(--borda); border-radius: 10px; padding: 8px 12px; color: var(--tinta);
+  font-family: var(--maquina); font-size: 12px; box-shadow: var(--sombra-dura); max-width: 70%;
+}
+.lj-ficha b { font-family: var(--titulo); font-size: 17px; display: block; line-height: 1.2; }
+.lj-adesivo {
+  position: absolute; left: -10px; top: 70px; transform: rotate(-9deg);
+  background: var(--pink); color: var(--tinta); border: var(--borda); border-radius: 999px;
+  padding: 8px 14px; font-family: var(--titulo); font-weight: 700; font-size: 15px; box-shadow: var(--sombra-dura);
+}
+
+/* ── Seções ── */
+.lj-secao { padding: 10px 0 70px; scroll-margin-top: 20px; }
+.lj-titulo { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+.lj-titulo h2 { font-family: var(--titulo); font-weight: 800; font-size: clamp(30px, 4vw, 44px); margin: 0; line-height: 1.05; color: var(--tinta); }
+.lj-contagem { font-family: var(--maquina); font-size: 13px; color: var(--gray); }
+
+.lj-filtros { display: grid; gap: 14px; margin-bottom: 26px; }
+.lj-busca { position: relative; display: block; max-width: 440px; }
+.lj-busca svg { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; color: var(--tinta); pointer-events: none; }
+.lj-busca input { height: 50px; padding-left: 46px; border-radius: 999px; border: var(--borda); box-shadow: var(--sombra-dura); }
+.lj-carreteis { display: flex; gap: 12px; overflow-x: auto; padding: 4px 4px 12px; scrollbar-width: thin; }
+.lj-carretel {
+  flex: none; display: flex; align-items: center; gap: 10px; cursor: pointer;
+  padding: 7px 18px 7px 7px; border-radius: 999px; border: var(--borda); background: #fff;
+  font: 700 15px var(--texto); color: var(--tinta); transition: transform .12s, box-shadow .12s;
+}
+.lj-carretel svg { width: 32px; height: 32px; flex: none; }
+.lj-carretel:hover { transform: translateY(-2px); }
+.lj-carretel[aria-pressed="true"] { background: var(--tinta); color: var(--papel); box-shadow: var(--sombra-dura); }
+
+/* ── Vitrine: cards adesivo ── */
+.lj-vitrine { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 30px 26px; }
+.lj-card {
+  position: relative; min-width: 0; background: #fff; border: var(--borda); border-radius: 22px;
+  box-shadow: var(--sombra-dura); padding: 12px 12px 16px; display: flex; flex-direction: column; gap: 8px;
+  transition: transform .15s, box-shadow .15s; scroll-margin-top: 20px;
+}
+.lj-card:nth-child(4n+1) { transform: rotate(-1.2deg); }
+.lj-card:nth-child(4n+2) { transform: rotate(.8deg); }
+.lj-card:nth-child(4n+3) { transform: rotate(-.4deg); }
+.lj-card:nth-child(4n)   { transform: rotate(1.3deg); }
+.lj-card:hover { transform: rotate(0) translate(-3px, -4px); box-shadow: 7px 7px 0 var(--tinta); }
+.lj-foto {
+  aspect-ratio: 1; border-radius: 14px; overflow: hidden; border: 2px solid var(--tinta); padding: 0; cursor: pointer;
+  background-color: var(--menta);
+  background-image: repeating-linear-gradient(180deg, transparent 0 9px, rgba(47,122,72,.09) 9px 11px);
+}
+.lj-foto img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .25s; }
+.lj-foto:hover img { transform: scale(1.04); }
+.lj-card.carregando { min-height: 330px; }
+.lj-card.carregando .lj-foto { animation: pulsar 1.2s ease-in-out infinite; cursor: default; }
+.lj-sem-foto { width: 100%; height: 100%; display: grid; place-items: center; }
+.lj-bicho { width: 62%; height: auto; }
+.lj-chip {
+  display: inline-block; font-family: var(--maquina); font-size: 11px; background: var(--mel);
+  border: 2px solid var(--tinta); border-radius: 6px; padding: 2px 8px; color: var(--tinta);
+}
+.lj-chip.menta { background: var(--menta); }
+.lj-chip-card { position: absolute; top: 2px; left: 22px; transform: translateY(-50%); z-index: 1; }
+.lj-card h3 { margin: 4px 0 0; font-size: 17px; line-height: 1.25; font-weight: 700; color: var(--tinta); }
+.lj-categoria { font-family: var(--maquina); font-size: 11.5px; color: var(--gray); }
+.lj-rodape-card { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 6px; gap: 10px; }
+.lj-preco { font-family: var(--titulo); font-weight: 800; font-size: 26px; line-height: 1; color: var(--tinta); font-variant-numeric: tabular-nums; }
+.lj-quero {
+  border: var(--borda); background: var(--green); color: #fff; border-radius: 12px; padding: 8px 14px;
+  font: 700 14px var(--texto); text-decoration: none; box-shadow: 3px 3px 0 var(--tinta); flex: none;
+  transition: transform .12s, box-shadow .12s;
+}
+.lj-quero:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--tinta); }
+.lj-quero:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--tinta); }
+.lj-vazio { text-align: center; padding: 40px 16px; border: 2px dashed var(--line); border-radius: 22px; color: var(--gray); }
+.lj-vazio b { display: block; font-family: var(--titulo); font-size: 26px; color: var(--tinta); }
+
+/* ── Como nasce um mimo ── */
+.lj-nasce { display: grid; grid-template-columns: .8fr 1.2fr; gap: 40px; align-items: end; }
+.lj-nasce p { font-size: 18px; color: #3b5446; max-width: 34ch; margin: 0; }
+.lj-pilha { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column-reverse; align-items: center; gap: 6px; }
+.lj-camada {
+  width: var(--w); border: var(--borda); border-radius: 12px; padding: 12px 16px;
+  display: flex; align-items: center; gap: 12px; background: var(--c);
+}
+.lj-num { font-family: var(--maquina); font-size: 12px; opacity: .75; flex: none; }
+.lj-camada span:last-child { margin-left: auto; font-size: 14px; color: #3b5446; text-align: right; }
+
+/* ── Bilhete ── */
+.lj-bilhete {
+  position: relative; max-width: 760px; margin: 0 auto; padding: 38px 40px;
+  background-color: #fffdf6; border: var(--borda); border-radius: 6px; transform: rotate(-1deg);
+  box-shadow: 7px 7px 0 var(--tinta);
+  background-image: repeating-linear-gradient(180deg, transparent 0 31px, rgba(47,122,72,.14) 31px 32px);
+  background-position: 0 22px;
+}
+.lj-bilhete::before, .lj-bilhete::after {
+  content: ""; position: absolute; top: -14px; width: 110px; height: 30px;
+  background: rgba(238,155,176,.75); border: 1.5px dashed rgba(31,58,43,.35);
+}
+.lj-bilhete::before { left: 30px; transform: rotate(-6deg); }
+.lj-bilhete::after { right: 30px; transform: rotate(5deg); background: rgba(244,201,93,.75); }
+.lj-bilhete h2 { font-family: var(--titulo); font-weight: 800; font-size: clamp(28px, 4vw, 40px); margin: 0 0 8px; line-height: 1.1; color: var(--tinta); }
+.lj-bilhete p { margin: 0 0 22px; font-size: 18px; max-width: 46ch; }
+
+/* ── Rodapé ── */
+.lj-rodape { margin-top: auto; border-top: var(--borda); padding: 26px 0 40px; font-size: 14px; }
+.lj-rodape .lj-miolo { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+.lj-rodape b { font-family: var(--titulo); font-size: 20px; }
+.lj-rodape span { font-family: var(--maquina); font-size: 12.5px; color: var(--gray); }
+
+/* ── Detalhes do produto ── */
+.lj-modal-fundo {
+  position: fixed; inset: 0; z-index: 20; background: rgba(31,58,43,.5);
+  display: grid; place-items: center; padding: 16px; overflow-y: auto;
+}
+.lj-modal {
+  position: relative; width: min(920px, 100%); max-height: calc(100vh - 32px); overflow-y: auto;
+  background: #fff; border: var(--borda); border-radius: 24px; box-shadow: 8px 8px 0 var(--tinta);
+  padding: 20px; display: grid; grid-template-columns: 1.1fr 1fr; gap: 24px;
+}
+.lj-modal > * { min-width: 0; }
+.lj-fechar {
+  position: absolute; top: 12px; right: 12px; z-index: 1; width: 40px; height: 40px; cursor: pointer;
+  border: 2px solid var(--tinta); border-radius: 11px; background: #fff; font-size: 22px; font-weight: 800; color: var(--tinta);
+}
+.lj-fechar:hover { background: var(--rosa-claro); }
+.lj-modal-foto {
+  aspect-ratio: 1; border: 2px solid var(--tinta); border-radius: 18px; overflow: hidden;
+  background-color: var(--menta);
+  background-image:
+    linear-gradient(rgba(47,122,72,.14) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, rgba(47,122,72,.14) 1.5px, transparent 1.5px);
+  background-size: 24px 24px;
+}
+.lj-modal-foto img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.lj-modal-info { display: flex; flex-direction: column; gap: 12px; padding: 30px 30px 0 0; align-items: flex-start; }
+.lj-modal-info h2 { margin: 0; font-family: var(--titulo); font-weight: 800; font-size: 30px; line-height: 1.1; color: var(--tinta); }
+.lj-modal-info .lj-preco { font-size: 36px; }
+.lj-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.lj-descricao { margin: 0; white-space: pre-line; color: #3b5446; }
+
+/* ── Orçamento ── */
+.lj .orcamento-caixa { margin: 10px auto 70px; }
+.lj .card.orcamento { box-shadow: 7px 7px 0 var(--tinta); }
+.lj .card .titulo-secao { font-family: var(--titulo); font-weight: 800; color: var(--tinta); font-size: clamp(28px, 4vw, 38px); }
+.lj .titulo-secao span { font-family: var(--titulo); color: var(--pink-dark); }
+.lj .rotulo { color: var(--tinta); }
+.lj .envio-foto { border: 2.5px dashed var(--tinta); border-radius: 18px; background: var(--rosa-claro); }
+.lj .envio-foto:hover, .lj .envio-foto:focus-within { border-color: var(--tinta); background: #fbd5df; }
+.lj .envio-foto.com-foto { background: #fff; border-style: solid; }
+.lj .envio-vazio { color: var(--tinta); }
+.lj .orcamento .enviar { border-radius: 14px; }
+.lj .orcamento .erro { color: var(--pink-dark); }
+.lj .orcamento-ok h2 { font-family: var(--titulo); font-weight: 800; color: var(--tinta); }
+.lj .ok-icone { border: var(--borda); color: var(--tinta); box-shadow: var(--sombra-dura); }
+.lj .btn.whatsapp { background: #25d366; color: var(--tinta); }
+
+@media (max-width: 860px) {
+  .lj-abertura, .lj-nasce { grid-template-columns: 1fr; }
+  .lj-abertura { padding-top: 10px; gap: 30px; }
+  .lj-menu { display: none; }
+  .lj-fila-dir { display: none; }
+  .lj-topo .lj-botao.zap { margin-left: auto; }
+  .lj-pilha .lj-camada { width: 100%; }
+  .lj-modal { grid-template-columns: 1fr; }
+  .lj-modal-info { padding: 0; }
+}
+@media (max-width: 520px) {
+  .lj-barra, .lj-fila-dir { display: none; }
+  .lj-marca small { display: none; }
+  .lj-topo .lj-botao.zap span { display: none; }
+  .lj-bilhete { padding: 30px 22px; }
+  .lj-camada { flex-wrap: wrap; }
+  .lj-camada span:last-child { margin-left: 0; text-align: left; width: 100%; }
+  .lj-vitrine { grid-template-columns: 1fr 1fr; gap: 22px 14px; }
+  .lj-card { padding: 8px 8px 12px; border-radius: 16px; }
+  .lj-card h3 { font-size: 14.5px; }
+  .lj-preco { font-size: 21px; }
+  .lj-quero { padding: 6px 10px; font-size: 13px; }
+  .lj-rodape-card { flex-wrap: wrap; }
+  .lj-chip-card { left: 12px; }
+  .lj-ficha { right: 4px; }
+  .lj-adesivo { left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lj-bico, .lj-ponto { animation: none; }
+  .lj-peca::after { display: none; }
+  .lj-card { transform: none !important; }
+}

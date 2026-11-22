@@ -6,12 +6,14 @@ import { api, gravar, ler, PLANILHA_SENHA, PLANILHA_URL } from '@/lib/planilha';
 import type { Conexao, Config, EntradaCalculo, ItemHistorico, StatusConexao, TipoAviso } from '@/lib/tipos';
 import { AbaCalcular, entradaVazia } from './AbaCalcular';
 import { AbaConfiguracoes } from './AbaConfiguracoes';
+import { AbaEncomendas } from './AbaEncomendas';
 import { AbaHistorico } from './AbaHistorico';
 
-type Aba = 'calc' | 'hist' | 'conf';
+type Aba = 'calc' | 'enc' | 'hist' | 'conf';
 
 const ABAS: { id: Aba; nome: string }[] = [
   { id: 'calc', nome: 'Calcular' },
+  { id: 'enc', nome: 'Encomendas' },
   { id: 'hist', nome: 'Histórico' },
   { id: 'conf', nome: 'Configurações' }
 ];
@@ -112,7 +114,7 @@ export function Calculadora() {
           <span className={`status ${classeStatus}`}>{TEXTO_STATUS[status]}</span>
         </header>
 
-        <nav role="tablist">
+        <nav className="abas" role="tablist">
           {ABAS.map(a => (
             <button key={a.id} role="tab" aria-selected={aba === a.id} onClick={() => setAba(a.id)}>
               {a.nome}
@@ -130,6 +132,9 @@ export function Calculadora() {
             aoSalvar={() => setHistorico(null)}
             categorias={categorias}
           />
+        )}
+        {aba === 'enc' && (
+          <AbaEncomendas conexao={conexao} historico={historico} setHistorico={setHistorico} aviso={aviso} />
         )}
         {aba === 'hist' && (
           <AbaHistorico conexao={conexao} historico={historico} setHistorico={setHistorico} aviso={aviso} categorias={categorias} />
