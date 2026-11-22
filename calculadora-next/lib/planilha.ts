@@ -6,7 +6,7 @@ import type { Conexao } from './tipos';
  */
 export const PLANILHA_URL =
   process.env.NEXT_PUBLIC_PLANILHA_URL ||
-  'https://script.google.com/macros/s/AKfycbwimOWDflxeWmJnFfoVdAKmVvCwniKrDGnIrErC_A3ajwHp_REw35n2DHTHFPa09W2TSg/exec';
+  'https://script.google.com/macros/s/AKfycby5UIEcXIw1i-krXhqEDQLqmykOYFiFhVGHbLNr48aZsWtG-HKcOluUjlOAOMbCg9gx/exec';
 
 /**
  * Senha enviada automaticamente. Fica vazia porque o script (Codigo.gs) está
