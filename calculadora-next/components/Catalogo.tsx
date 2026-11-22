@@ -242,7 +242,6 @@ export function Catalogo() {
 
         <section className="lj-abertura">
           <div>
-            <span className="lj-etiqueta">PLA · 0,2 mm · feito sob encomenda</span>
             <h1>Mimos que nascem <span className="lj-camadas">camada por camada.</span></h1>
             <p className="lj-lead">Chaveiros, fidgets, enfeites e presentes impressos em 3D, nas cores que você escolher.</p>
             <div className="lj-acoes">

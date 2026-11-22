@@ -20,7 +20,7 @@ export function novaLinha(config: Config, dados: Partial<LinhaFilamento> = {}): 
 export function entradaVazia(config: Config): EntradaCalculo {
   return {
     produto: '', link: '', quantidade: '1', obs: '',
-    horas: '0', minutos: '0',
+    horas: '', minutos: '',
     mult: String(config.mult), taxa: String(config.taxa),
     filamentos: [novaLinha(config)],
     foto: '', catalogo: false, descricao: '', categoria: '', destaque: false
@@ -157,10 +157,10 @@ export function AbaCalcular({ config, conexao, entrada, setEntrada, aviso, aoSal
           <h2><span className="ico">◷</span>Tempo de impressão</h2>
           <div className="fields">
             <label>Horas
-              <CampoUnidade sufixo="h" min={0} step={1} {...campo('horas')} />
+              <CampoUnidade sufixo="h" min={0} step={1} placeholder="0" {...campo('horas')} />
             </label>
             <label>Minutos
-              <CampoUnidade sufixo="min" min={0} max={59} step={1} {...campo('minutos')} />
+              <CampoUnidade sufixo="min" min={0} max={59} step={1} placeholder="0" {...campo('minutos')} />
             </label>
           </div>
           <p className="hint" style={{ margin: '12px 0 0' }}>

@@ -5,12 +5,14 @@ import { brl, num } from '@/lib/formato';
 import { api } from '@/lib/planilha';
 import { linkFoto } from '@/lib/foto';
 import { useCarregarHistorico } from '@/lib/useHistorico';
+import { EditorCalculo } from './EditorCalculo';
 import { EditorCatalogo } from './EditorCatalogo';
 import { FotoProduto } from './FotoProduto';
-import type { Conexao, ItemHistorico, TipoAviso } from '@/lib/tipos';
+import type { Conexao, Config, ItemHistorico, TipoAviso } from '@/lib/tipos';
 
 interface Props {
   conexao: Conexao;
+  config: Config;
   /** null = ainda não carregado (ou precisa recarregar). */
   historico: ItemHistorico[] | null;
   setHistorico: (h: ItemHistorico[] | null) => void;
@@ -22,10 +24,14 @@ function Vazio({ titulo, texto }: { titulo: string; texto: string }) {
   return <div className="empty"><b>{titulo}</b>{texto}</div>;
 }
 
-export function AbaHistorico({ conexao, historico, setHistorico, aviso, categorias }: Props) {
+export function AbaHistorico({ conexao, config, historico, setHistorico, aviso, categorias }: Props) {
   const [busca, setBusca] = useState('');
+  /** "catalogo:ID" ou "calculo:ID": qual editor está aberto (um por vez). */
   const [editando, setEditando] = useState('');
   const [erro, setErro] = useCarregarHistorico(conexao, historico, setHistorico);
+
+  const alternar = (id: string, modo: 'catalogo' | 'calculo') =>
+    setEditando(e => (e === `${modo}:${id}` ? '' : `${modo}:${id}`));
 
   async function apagar(id: string) {
     if (!confirm('Apagar este cálculo da planilha?')) return;
@@ -71,10 +77,16 @@ export function AbaHistorico({ conexao, historico, setHistorico, aviso, categori
                   custo {brl(num(i.custoBase))} × {num(i.multiplicador)}
                 </p>
                 {i.observacoes && <p>{i.observacoes}</p>}
-                <button type="button" className={`selo-catalogo ${i.catalogo ? 'ativo' : ''}`}
-                  onClick={() => setEditando(editando === String(i.id) ? '' : String(i.id))}>
-                  {i.catalogo ? (i.destaque ? '★ Destaque' : '✓ No catálogo') : '+ Catálogo'}{i.categoria ? ` · ${i.categoria}` : ''} · ✎ editar
-                </button>
+                <div className="hist-botoes">
+                  <button type="button" className={`selo-catalogo ${i.catalogo ? 'ativo' : ''}`}
+                    onClick={() => alternar(String(i.id), 'catalogo')}>
+                    {i.catalogo ? (i.destaque ? '★ Destaque' : '✓ No catálogo') : '+ Catálogo'}{i.categoria ? ` · ${i.categoria}` : ''} · ✎ editar
+                  </button>
+                  <button type="button" className="selo-catalogo selo-recalcular"
+                    onClick={() => alternar(String(i.id), 'calculo')}>
+                    ⚖ gramas e tempo
+                  </button>
+                </div>
               </div>
               <div className="val">
                 {brl(num(i.precoFinal))}
@@ -82,8 +94,13 @@ export function AbaHistorico({ conexao, historico, setHistorico, aviso, categori
               </div>
               <button className="icon-btn del" type="button" title="Apagar" aria-label="Apagar cálculo"
                 onClick={() => apagar(String(i.id))}>×</button>
-              {editando === String(i.id) && (
+              {editando === `catalogo:${i.id}` && (
                 <EditorCatalogo item={i} conexao={conexao} categorias={categorias} aviso={aviso}
+                  fechar={() => setEditando('')}
+                  aoSalvar={novo => setHistorico((historico ?? []).map(x => (String(x.id) === String(i.id) ? novo : x)))} />
+              )}
+              {editando === `calculo:${i.id}` && (
+                <EditorCalculo item={i} config={config} conexao={conexao} aviso={aviso}
                   fechar={() => setEditando('')}
                   aoSalvar={novo => setHistorico((historico ?? []).map(x => (String(x.id) === String(i.id) ? novo : x)))} />
               )}

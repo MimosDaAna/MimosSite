@@ -69,3 +69,33 @@ export function calcular(e: EntradaCalculo, config: Config): Resultado {
     }
   };
 }
+
+/** Linha de filamento lida de volta do texto gravado na planilha. */
+export interface FilamentoSalvo {
+  nome: string;
+  preco: number;
+  gramas: number;
+}
+
+/**
+ * Lê o texto da coluna "Filamentos" (ex.: "PLA Basic: 25 g a R$ 240,00/kg | PETG: 3 g a R$ 240,00/kg").
+ * Os gramas são gravados com ponto decimal e o preço no formato brasileiro.
+ */
+export function lerFilamentos(texto: string): FilamentoSalvo[] {
+  return String(texto || '')
+    .split('|')
+    .map(parte => parte.match(/^\s*(.+?):\s*([\d.]+)\s*g a R\$\s*([\d.,]+)\s*\/kg\s*$/u))
+    .filter((m): m is RegExpMatchArray => !!m)
+    .map(m => ({
+      nome: m[1].trim(),
+      gramas: parseFloat(m[2]) || 0,
+      preco: parseFloat(m[3].replace(/\./g, '').replace(',', '.')) || 0
+    }));
+}
+
+/** Taxa de venda que gerou o preço final (para cálculos antigos que não trazem a taxa). */
+export function taxaDoPreco(custoBase: number, mult: number, precoFinal: number): number {
+  if (custoBase <= 0 || precoFinal <= 0) return 0;
+  const t = (1 - (custoBase * mult) / precoFinal) * 100;
+  return t < 0.5 ? 0 : Math.min(90, Math.round(t * 2) / 2);
+}

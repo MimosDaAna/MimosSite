@@ -48,6 +48,7 @@ function doPost(e) {
       case 'list':       return resposta(listarCalculos(req.limit || 100));
       case 'delete':     return resposta(apagarCalculo(req.id));
       case 'editCatalogo': return resposta(editarCatalogo(req.id, req.data));
+      case 'editCalculo':  return resposta(editarCalculo(req.id, req.data || {}));
       case 'listEncomendas':  return resposta(listarEncomendas());
       case 'saveEncomenda':   return resposta(salvarEncomenda(req.data || {}));
       case 'deleteEncomenda': return resposta(apagarEncomenda(req.id));
@@ -110,7 +111,8 @@ function listarCalculos(limite) {
     return {
       id: l[0], data: l[1] instanceof Date ? l[1].toISOString() : l[1],
       produto: l[2], link: l[3], quantidade: l[4], filamentos: l[5],
-      gramas: l[6], horas: l[7], custoBase: l[10], multiplicador: l[11],
+      gramas: l[6], horas: l[7], custoFilamento: l[8], custoBase: l[10], multiplicador: l[11],
+      taxaMarketplace: l[13],
       precoFinal: l[14], precoTotal: l[15], observacoes: l[16], foto: l[COL_FOTO],
       catalogo: marcado(l[COL_NO_CATALOGO]), descricao: l[COL_DESCRICAO], categoria: l[COL_CATEGORIA],
       destaque: marcado(l[COL_DESTAQUE])
@@ -151,6 +153,21 @@ function editarCatalogo(id, d) {
     if (nova !== foto) { apagarFoto(foto); celFoto.setValue(nova); foto = nova; }
   }
   return { ok: true, foto: foto };
+}
+
+/** Troca gramas, tempo, quantidade e preços de um cálculo (refeitos pela página). */
+function editarCalculo(id, d) {
+  const aba = abaCalculos();
+  const linha = linhaDoId(aba, id);
+  if (!linha) return { ok: false, erro: 'Cálculo não encontrado' };
+  const n = function (v) { return Number(v) || 0; };
+  // Colunas E (Quantidade) até P (Preço total).
+  aba.getRange(linha, 5, 1, 12).setValues([[
+    Math.max(1, parseInt(d.quantidade, 10) || 1), String(d.filamentos || ''), n(d.gramas), n(d.horas),
+    n(d.custoFilamento), n(d.custoHoras), n(d.custoBase), n(d.multiplicador) || 1,
+    n(d.precoUnitario), n(d.taxaMarketplace), n(d.precoFinal), n(d.precoTotal)
+  ]]);
+  return { ok: true };
 }
 
 /** Produtos marcados para o catálogo, do mais novo para o mais antigo. Sem custos. */

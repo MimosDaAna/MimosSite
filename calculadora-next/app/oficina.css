@@ -234,3 +234,18 @@ body.tema-oficina {
   .tema-oficina .status.ok::before { animation: none; }
   .tema-oficina .enc-cartao { transform: none !important; }
 }
+
+/* ── Histórico: editar gramas e tempo ── */
+.hist-botoes { display: flex; gap: 6px; flex-wrap: wrap; }
+.tema-oficina .selo-recalcular { border-style: solid; background: var(--menta); }
+.editor-calculo .fil-row { margin-bottom: 0; }
+.editor-calculo .fields { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
+.recalculo {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px;
+  padding: 12px 14px; border-radius: 14px; border: 2px solid var(--tinta);
+  background-color: var(--menta); font-family: var(--maquina); font-size: 13px;
+}
+.recalculo-preco { margin-left: auto; display: flex; align-items: baseline; gap: 8px; }
+.recalculo-preco b { font-family: var(--titulo); font-weight: 800; font-size: 26px; }
+.recalculo-preco s { color: var(--gray); }
+.recalculo-preco small { color: var(--gray); }

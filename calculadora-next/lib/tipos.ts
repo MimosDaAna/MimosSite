@@ -87,6 +87,9 @@ export interface ItemHistorico {
   filamentos: string;
   gramas: number;
   horas: number;
+  /** Vêm do script novo; em cálculos antigos podem faltar. */
+  custoFilamento?: number;
+  taxaMarketplace?: number | '';
   custoBase: number;
   multiplicador: number;
   precoFinal: number;
