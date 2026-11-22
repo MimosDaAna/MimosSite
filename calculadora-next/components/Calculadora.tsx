@@ -137,7 +137,7 @@ export function Calculadora() {
           <AbaEncomendas conexao={conexao} historico={historico} setHistorico={setHistorico} aviso={aviso} />
         )}
         {aba === 'hist' && (
-          <AbaHistorico conexao={conexao} historico={historico} setHistorico={setHistorico} aviso={aviso} categorias={categorias} />
+          <AbaHistorico conexao={conexao} config={config} historico={historico} setHistorico={setHistorico} aviso={aviso} categorias={categorias} />
         )}
         {aba === 'conf' && (
           <AbaConfiguracoes config={config} conexao={conexao} aoSalvarConfig={salvarConfig} aoConectar={novaConexao} />

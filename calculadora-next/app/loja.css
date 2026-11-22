@@ -45,6 +45,7 @@
   display: inline-block; font-family: var(--maquina); font-size: 12px; padding: 5px 10px;
   border: 1.5px solid var(--tinta); border-radius: 6px; background: var(--papel-2);
 }
+.lj h1:first-child { margin-top: 0; }
 .lj h1 {
   font-family: var(--titulo); font-weight: 800; color: var(--tinta);
   font-size: clamp(42px, 6.4vw, 84px); line-height: .98; letter-spacing: -.01em; margin: 18px 0 20px;
