@@ -5,6 +5,7 @@ import { enviarOrcamento, linkOrcamento } from '@/lib/catalogo';
 import { linkFoto } from '@/lib/foto';
 import { reduzirImagem } from './CampoFoto';
 import { IconeWhatsapp } from './IconeWhatsapp';
+import { RodapeLoja } from './Catalogo';
 import { TopoLoja } from './TopoLoja';
 
 interface Enviado {
@@ -68,8 +69,9 @@ export function Orcamento() {
   }
 
   return (
-    <div className="wrap loja">
-      <TopoLoja pagina="orcamento" subtitulo="Orçamento · peças sob medida" />
+    <div className="lj">
+      <div className="lj-miolo">
+      <TopoLoja pagina="orcamento" subtitulo="orçamento · peças sob medida" />
 
       <section className="card orcamento orcamento-caixa" aria-labelledby="titulo-orcamento">
           {enviado ? (
@@ -139,6 +141,8 @@ export function Orcamento() {
             </form>
           )}
       </section>
+      </div>
+      <RodapeLoja />
     </div>
   );
 }

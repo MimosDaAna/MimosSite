@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { brl, num } from '@/lib/formato';
 import { api } from '@/lib/planilha';
 import { linkFoto } from '@/lib/foto';
+import { useCarregarHistorico } from '@/lib/useHistorico';
 import { EditorCatalogo } from './EditorCatalogo';
 import { FotoProduto } from './FotoProduto';
 import type { Conexao, ItemHistorico, TipoAviso } from '@/lib/tipos';
@@ -24,17 +25,7 @@ function Vazio({ titulo, texto }: { titulo: string; texto: string }) {
 export function AbaHistorico({ conexao, historico, setHistorico, aviso, categorias }: Props) {
   const [busca, setBusca] = useState('');
   const [editando, setEditando] = useState('');
-  const [erro, setErro] = useState('');
-
-  useEffect(() => {
-    if (!conexao.url || historico) return;
-    let ativo = true;
-    setErro('');
-    api<{ itens: ItemHistorico[] }>(conexao, 'list', { limit: 200 })
-      .then(r => { if (ativo) setHistorico(r.itens); })
-      .catch(e => { if (ativo) setErro((e as Error).message); });
-    return () => { ativo = false; };
-  }, [conexao, historico, setHistorico]);
+  const [erro, setErro] = useCarregarHistorico(conexao, historico, setHistorico);
 
   async function apagar(id: string) {
     if (!confirm('Apagar este cálculo da planilha?')) return;
